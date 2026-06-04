@@ -10,16 +10,16 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    Schema::create('itinerary_location', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('itinerary_id')->constrained()->onDelete('cascade');
-        $table->foreignId('location_id')->constrained()->onDelete('cascade');
-        $table->dateTime('visit_time')->nullable(); 
-        $table->text('note')->nullable(); 
-        $table->timestamps();
-    });
-}
+    {
+        Schema::create('itinerary_location', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('itinerary_id')->constrained()->onDelete('cascade');
+            $table->foreignId('location_id')->constrained()->onDelete('cascade');
+            $table->dateTime('visit_time')->nullable();
+            $table->text('note')->nullable();
+            $table->timestamps();
+        });
+    }
 
     /**
      * Reverse the migrations.

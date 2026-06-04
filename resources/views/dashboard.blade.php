@@ -44,8 +44,8 @@
                 <div class="p-8 text-gray-900 flex flex-col items-center text-center">
                     <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" alt="Travel Welcome" class="w-full h-64 object-cover rounded-xl mb-8 shadow-md">
                     
-                    <h3 class="text-3xl font-extrabold text-gray-800 mb-4 tracking-tight">Hệ thống đã sẵn sàng! 🚀</h3>
-                    <p class="text-lg text-gray-500 max-w-2xl mb-8">Bạn đã hoàn thành xuất sắc việc xây dựng lõi ứng dụng. Hãy tiếp tục làm giàu cơ sở dữ liệu hoặc lên kế hoạch cho chuyến hành trình tiếp theo.</p>
+                    <h3 class="text-3xl font-extrabold text-gray-800 mb-4 tracking-tight">Bắt đầu lên kế hoạch cho chuyến đi</h3>
+                    <p class="text-lg text-gray-500 max-w-2xl mb-8">Thêm địa điểm vào kho chung, sau đó tạo lịch trình riêng của bạn với thời gian ghé thăm và ghi chú cho từng điểm dừng.</p>
                     
                     <div class="flex flex-wrap justify-center gap-4">
                         <a href="{{ route('locations.create') }}" class="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">

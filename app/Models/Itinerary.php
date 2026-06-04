@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Itinerary extends Model
 {
     protected $fillable = [
-        'user_id', 
-        'title', 
-        'description', 
-        'start_date', 
-        'end_date'
+        'user_id',
+        'title',
+        'description',
+        'start_date',
+        'end_date',
     ];
 
     public function user()
@@ -22,7 +22,7 @@ class Itinerary extends Model
     public function locations()
     {
         return $this->belongsToMany(Location::class, 'itinerary_location')
-                    ->withPivot('visit_time', 'note')
-                    ->withTimestamps();
+            ->withPivot('id', 'visit_time', 'note')
+            ->withTimestamps();
     }
 }

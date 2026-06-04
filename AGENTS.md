@@ -20,12 +20,12 @@ Do not describe or build on group collaboration as if it already exists. Read `d
 | --- | --- | --- |
 | Authentication and profiles | `routes/auth.php`, `app/Http/Controllers/Auth`, `ProfileController`, auth/profile views | Laravel Breeze baseline |
 | Dashboard | `routes/web.php`, `resources/views/dashboard.blade.php` | Signed-in landing page |
-| Categories | `CategoryController`, `Category`, category views | Signed-in read; intended admin write |
+| Categories | `CategoryController`, `Category`, category views | Signed-in read; admin create/delete; deletion blocked while locations exist |
 | Locations | `LocationController`, `Location`, location views | Shared catalog; contributor or admin edit/delete |
 | Itineraries | `ItineraryController`, `Itinerary`, itinerary views | Current owner-only workspace |
 | Scheduled stops | `itinerary_location` migration, `Itinerary::locations()` | Pivot data stores visit time and note |
 | Public sharing | `ItineraryController::shared()`, `itineraries/shared.blade.php` | Anonymous read-only URL |
-| Admin moderation | `AdminController`, `AdminMiddleware`, admin views | `role === 'admin'` |
+| Admin moderation | `AdminController`, `AdminMiddleware`, admin views | `User::isAdmin()` / `role === 'admin'` |
 
 ## Product Invariants
 
@@ -35,7 +35,7 @@ Do not describe or build on group collaboration as if it already exists. Read `d
 - Current itinerary mutations require the itinerary owner.
 - Public share URLs are read-only. Never grant edit access from a public share URL.
 - Location mutation is limited to the contributor or an admin.
-- Category deletion cascades into locations and scheduled stops. Treat it as a high-impact operation.
+- Category deletion is blocked by the controller while locations exist. The schema still cascades if a category is deleted at a lower level, so treat it as a high-impact operation.
 - Admin moderation is separate from future group membership.
 
 ## Before Adding Collaboration
@@ -56,14 +56,13 @@ Do not overload `user_id`, the public share URL, or the admin role to simulate c
 
 Check these before modifying adjacent code:
 
-1. `User` fillable attributes omit `role`, so `DatabaseSeeder` may not create a real admin account.
-2. Category UI and routes disagree: the signed-in category page renders write controls, but writes are admin-only.
-3. The admin category resource registers `create`, `edit`, and `update`, but `CategoryController` does not implement them.
-4. The base users migration already creates `role`; the later role migration has rollback risk.
-5. The migration adding `locations.user_id` has an empty `down()` method.
-6. Public itinerary share URLs expose sequential itinerary IDs and cannot be revoked.
-7. The `verified` dashboard middleware does not enforce verification while `User` does not implement `MustVerifyEmail`.
-8. Travel-domain feature tests have not been added yet.
+1. Public itinerary share URLs expose sequential itinerary IDs and cannot be revoked.
+2. Group collaboration is not implemented; itinerary changes are still owner-only.
+3. Authorization is still mostly manual in controllers. Prefer policies when expanding access rules.
+4. The base users migration owns `role`; the later role migration is intentionally a no-op compatibility migration.
+5. Category deletion is blocked in HTTP flows when locations exist, but direct database deletion can still cascade.
+6. Travel-domain feature tests are focused, not complete. PDF export, public share access, and admin moderation still need coverage.
+7. The default PHPUnit suite requires the PHP CLI `pdo_sqlite` extension.
 
 ## Change Guidance
 
@@ -102,4 +101,4 @@ php artisan test
 
 The default test suite requires the PHP CLI `pdo_sqlite` extension because `phpunit.xml` uses in-memory SQLite.
 
-- Note: Running tests should be kept at a minimum, kept fast, and report blockers when they cannot run. Do not add or run tests that require a full MySQL or PostgreSQL environment; Update documentation when the related setup, module boundaries, routes, data relationships, or product behavior change.
+Do not add or run tests that require a full MySQL or PostgreSQL environment unless the feature specifically depends on that driver. Update documentation when setup, module boundaries, routes, data relationships, or product behavior change.

@@ -6,7 +6,8 @@
         "build": "vite build",
         "dev": "vite",
         "setup": "composer run setup",
-        "down": "npm run setup"
+        "down": "php artisan down",
+        "up": "php artisan up"
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",

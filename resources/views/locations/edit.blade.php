@@ -15,7 +15,9 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-8">
                 <form action="{{ route('locations.update', $location) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                     @csrf
-                    @method('PUT') <div>
+                    @method('PUT')
+
+                    <div>
                         <label for="name" class="block text-sm font-medium text-gray-700">Tên địa điểm <span class="text-red-500">*</span></label>
                         <input type="text" name="name" id="name" value="{{ old('name', $location->name) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                         @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
@@ -30,6 +32,7 @@
                                 </option>
                             @endforeach
                         </select>
+                        @error('category_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
@@ -44,6 +47,7 @@
 
                         <label for="imageInput" class="block text-sm font-medium text-gray-500">Thay ảnh mới (nếu muốn):</label>
                         <input type="file" name="image" id="imageInput" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                        @error('image') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         
                         <div class="mt-4 hidden" id="previewContainer">
                             <p class="text-xs text-gray-500 mb-1">Ảnh mới sẽ thay thế:</p>
@@ -54,6 +58,13 @@
                     <div>
                         <label for="description" class="block text-sm font-medium text-gray-700">Mô tả</label>
                         <textarea name="description" id="description" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('description', $location->description) }}</textarea>
+                        @error('description') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div>
+                        <label for="address" class="block text-sm font-medium text-gray-700">Địa chỉ thực tế</label>
+                        <input type="text" name="address" id="address" value="{{ old('address', $location->address) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Ví dụ: Phường Bãi Cháy, TP. Hạ Long">
+                        @error('address') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="pt-4 flex gap-3">

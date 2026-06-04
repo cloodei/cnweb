@@ -9,10 +9,12 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-   public function up(): void
+    public function up(): void
     {
         Schema::table('locations', function (Blueprint $table) {
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null')->after('id');
+            if (! Schema::hasColumn('locations', 'user_id')) {
+                $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            }
         });
     }
 
@@ -22,7 +24,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('locations', function (Blueprint $table) {
-            //
+            if (Schema::hasColumn('locations', 'user_id')) {
+                $table->dropConstrainedForeignId('user_id');
+            }
         });
     }
 };

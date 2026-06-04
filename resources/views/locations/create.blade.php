@@ -18,7 +18,7 @@
 
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700">Tên địa điểm <span class="text-red-500">*</span></label>
-                        <input type="text" name="name" id="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required placeholder="Ví dụ: Vịnh Hạ Long">
+                        <input type="text" name="name" id="name" value="{{ old('name') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required placeholder="Ví dụ: Vịnh Hạ Long">
                         @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
@@ -27,7 +27,7 @@
                         <select name="category_id" id="category_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                             <option value="">-- Chọn danh mục --</option>
                             @foreach($categories as $category)
-                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                             @endforeach
                         </select>
                         @error('category_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
@@ -46,12 +46,14 @@
 
                     <div>
                         <label for="description" class="block text-sm font-medium text-gray-700">Mô tả chi tiết</label>
-                        <textarea name="description" id="description" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Nhập giới thiệu về địa điểm này..."></textarea>
+                        <textarea name="description" id="description" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Nhập giới thiệu về địa điểm này...">{{ old('description') }}</textarea>
+                        @error('description') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div>
                         <label for="address" class="block text-sm font-medium text-gray-700">Địa chỉ thực tế</label>
-                        <input type="text" name="address" id="address" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Ví dụ: Phường Bãi Cháy, TP. Hạ Long">
+                        <input type="text" name="address" id="address" value="{{ old('address') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Ví dụ: Phường Bãi Cháy, TP. Hạ Long">
+                        @error('address') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="pt-4">

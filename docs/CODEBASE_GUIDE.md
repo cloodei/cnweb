@@ -7,7 +7,7 @@ This is a server-rendered Laravel application. Browser requests enter through `r
 ```mermaid
 flowchart LR
     Browser --> Routes["routes/web.php"]
-    Routes --> Middleware["auth, verified, admin"]
+    Routes --> Middleware["auth, admin"]
     Middleware --> Controllers["app/Http/Controllers"]
     Controllers --> Models["app/Models"]
     Models --> Database[(Database)]
@@ -31,7 +31,7 @@ flowchart LR
 | `database/seeders/DatabaseSeeder.php` | Local demo-user seed data. |
 | `resources/views` | Blade pages grouped by feature. |
 | `resources/js` and `resources/css` | Vite entry points for Alpine.js and Tailwind CSS. |
-| `tests` | Breeze scaffold tests. Custom travel-domain coverage still needs to be added. |
+| `tests` | Breeze scaffold tests plus focused travel-domain feature tests. |
 
 ## Module Map
 
@@ -44,7 +44,7 @@ Laravel Breeze owns registration, login, logout, password reset, password confir
 - Views: `resources/views/auth/*` and `resources/views/profile/*`
 - Model: `app/Models/User.php`
 
-The dashboard route uses `verified` middleware, but `User` does not currently implement `MustVerifyEmail`. Email verification is therefore scaffolded but not enforced.
+Email verification routes are provided by Breeze, but the dashboard does not require verified email status because `User` does not implement `MustVerifyEmail`.
 
 ### Dashboard
 
@@ -65,7 +65,7 @@ Categories organize the shared destination catalog.
 - Views: `resources/views/categories/*`
 - Relationship: one category has many locations.
 
-Read access is available to signed-in users. Write routes are under `auth` plus `admin`, although the category index view currently shows add and delete controls to every signed-in user. See [Known Gaps](#known-gaps).
+Read access is available to signed-in users. Category creation and deletion are admin-only. Deletion is blocked when a category still has locations, because deleting a category at the database level cascades into locations and scheduled stops.
 
 ### Locations
 
@@ -170,12 +170,12 @@ Important schema behavior:
 | --- | --- | --- |
 | Landing page | `GET /` | Public |
 | Public itinerary share | `GET /shared/itineraries/{itinerary}` | Public, read-only |
-| Dashboard | `GET /dashboard` | Signed in; route includes `verified` middleware |
+| Dashboard | `GET /dashboard` | Signed in |
 | Categories | `GET /categories`, `GET /categories/{category}` | Signed in |
-| Category writes | `POST /categories`, `DELETE /categories/{category}` and generated resource routes | Admin |
+| Category writes | `POST /categories`, `DELETE /categories/{category}` | Admin |
 | Locations | `/locations/*` | Signed in; contributor or admin for edit and delete |
 | Itineraries | `/itineraries/*` | Signed in; controller restricts records to owner |
-| Itinerary stops | `POST /itineraries/{itinerary}/add-location`, `DELETE /itineraries/{itinerary}/remove-location/{location}` | Signed in itinerary owner |
+| Itinerary stops | `POST /itineraries/{itinerary}/add-location`, `DELETE /itineraries/{itinerary}/remove-stop/{stop}` | Signed in itinerary owner |
 | PDF export | `GET /itineraries/{itinerary}/pdf` | Signed in itinerary owner |
 | Admin moderation | `/admin/users`, `/admin/itineraries` | Admin |
 
@@ -204,7 +204,7 @@ Use `php artisan route:list --except-vendor` as the source of truth when routes 
 ### Moderate Content
 
 1. The request enters the `auth` plus `admin` route group.
-2. `AdminMiddleware` checks `Auth::user()->role === 'admin'`.
+2. `AdminMiddleware` checks `Auth::user()->isAdmin()`.
 3. `AdminController` lists or deletes users and itineraries.
 
 ## Frontend Notes
@@ -221,12 +221,10 @@ Use `php artisan route:list --except-vendor` as the source of truth when routes 
 Treat these as active maintenance items when touching the related modules:
 
 1. **Group collaboration is not implemented.** Itineraries are owner-only and public sharing is read-only.
-2. **Seeded admin role is not currently mass assignable.** `DatabaseSeeder` passes `role`, but `User` fillable attributes omit it. A seeded admin may be stored as a normal user.
-3. **Category routes and UI are inconsistent.** The category index renders create and delete controls for every signed-in user, but writes are admin-only. The admin resource also registers `create`, `edit`, and `update` routes while `CategoryController` does not implement those methods.
-4. **Migration rollback paths need repair.** The base user migration already creates `role`, the later role migration can drop it during rollback, and the location `user_id` migration has an empty `down()` method.
-5. **Public itinerary links are enumerable.** The share route uses the itinerary database ID without a token or revocation mechanism.
-6. **Custom domain tests are missing.** Existing tests cover the Breeze scaffold and the landing page, not locations, itineraries, category permissions, admin behavior, PDF export, or share links.
-7. **Verification is not enforced.** The `verified` dashboard middleware has no effect until `User` implements `MustVerifyEmail`.
+2. **Public itinerary links are enumerable.** The share route uses the itinerary database ID without a token or revocation mechanism.
+3. **Authorization is still mostly manual.** Controllers enforce owner/admin checks directly. Policies would make future collaboration and moderation rules easier to test.
+4. **Domain tests are partial.** Category permissions, location ownership, and exact scheduled-stop deletion have coverage. PDF export, public share access, and admin moderation still need tests.
+5. **Admin moderation is basic.** Admins can list and delete users or itineraries, but there is no audit trail, soft delete, or recovery flow.
 
 ## Where To Extend
 

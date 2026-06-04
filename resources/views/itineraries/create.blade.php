@@ -17,25 +17,27 @@
 
                     <div>
                         <label for="title" class="block text-sm font-bold text-gray-700">Tên chuyến đi / Tiêu đề <span class="text-red-500">*</span></label>
-                        <input type="text" name="title" id="title" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" placeholder="Ví dụ: Du hí Hà Nội 3 ngày 2 đêm" required>
+                        <input type="text" name="title" id="title" value="{{ old('title') }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" placeholder="Ví dụ: Du hí Hà Nội 3 ngày 2 đêm" required>
                         @error('title') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="start_date" class="block text-sm font-bold text-gray-700">Ngày bắt đầu <span class="text-red-500">*</span></label>
-                            <input type="date" name="start_date" id="start_date" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" required>
+                            <input type="date" name="start_date" id="start_date" value="{{ old('start_date') }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" required>
+                            @error('start_date') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                         <div>
                             <label for="end_date" class="block text-sm font-bold text-gray-700">Ngày kết thúc <span class="text-red-500">*</span></label>
-                            <input type="date" name="end_date" id="end_date" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" required>
+                            <input type="date" name="end_date" id="end_date" value="{{ old('end_date') }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" required>
                             @error('end_date') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
                     <div>
                         <label for="description" class="block text-sm font-bold text-gray-700">Ghi chú chuyến đi</label>
-                        <textarea name="description" id="description" rows="4" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" placeholder="Nhập mục tiêu chuyến đi hoặc chuẩn bị hành lý..."></textarea>
+                        <textarea name="description" id="description" rows="4" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" placeholder="Nhập mục tiêu chuyến đi hoặc chuẩn bị hành lý...">{{ old('description') }}</textarea>
+                        @error('description') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
                     <div class="pt-4">

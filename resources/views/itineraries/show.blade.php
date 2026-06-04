@@ -49,19 +49,24 @@
                                 <select name="location_id" id="location_id" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" required>
                                     <option value="">-- Bấm vào đây để chọn --</option>
                                     @foreach($allLocations as $loc)
-                                        <option value="{{ $loc->id }}">{{ $loc->name }} ({{ $loc->address }})</option>
+                                        <option value="{{ $loc->id }}" {{ old('location_id') == $loc->id ? 'selected' : '' }}>
+                                            {{ $loc->name }} ({{ $loc->address }})
+                                        </option>
                                     @endforeach
                                 </select>
+                                @error('location_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
 
                             <div>
                                 <label for="visit_time" class="block text-sm font-medium text-gray-700">Thời gian ghé thăm</label>
-                                <input type="datetime-local" name="visit_time" id="visit_time" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500">
+                                <input type="datetime-local" name="visit_time" id="visit_time" value="{{ old('visit_time') }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500">
+                                @error('visit_time') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
 
                             <div>
                                 <label for="note" class="block text-sm font-medium text-gray-700">Ghi chú / Hoạt động</label>
-                                <textarea name="note" id="note" rows="3" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" placeholder="Ví dụ: Ăn trưa tại đây, chụp ảnh checkin..."></textarea>
+                                <textarea name="note" id="note" rows="3" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" placeholder="Ví dụ: Ăn trưa tại đây, chụp ảnh checkin...">{{ old('note') }}</textarea>
+                                @error('note') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
 
                             <button type="submit" class="w-full inline-flex justify-center py-2.5 px-4 border border-transparent shadow-sm text-sm font-bold rounded-xl text-white bg-teal-600 hover:bg-teal-700 transition-all">
@@ -94,7 +99,7 @@
                                             <div class="flex-1">
                                                 <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
                                                     <h4 class="text-lg font-bold text-gray-900">{{ $sl->name }}</h4>
-                                                    <form action="{{ route('itineraries.remove-location', ['itinerary' => $itinerary->id, 'location' => $sl->id]) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn gỡ địa điểm này khỏi chuyến đi?');">
+                                                    <form action="{{ route('itineraries.remove-stop', ['itinerary' => $itinerary->id, 'stop' => $sl->pivot->id]) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn gỡ địa điểm này khỏi chuyến đi?');">
         @csrf
         @method('DELETE')
         <button type="submit" class="text-red-400 hover:text-red-600 transition-colors" title="Gỡ khỏi lịch trình">

@@ -16,27 +16,25 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                     <x-nav-link :href="route('categories.index')" :active="request()->routeIs('categories.*')">
-    {{ __('Danh mục') }}
-</x-nav-link>
+                        {{ __('Danh mục') }}
+                    </x-nav-link>
 
-<x-nav-link :href="route('locations.index')" :active="request()->routeIs('locations.*')">
-    {{ __('Địa điểm') }}
-</x-nav-link>
-<x-nav-link :href="route('itineraries.index')" :active="request()->routeIs('itineraries.*')">
-    {{ __('Lịch trình của tôi') }}
-</x-nav-link>
-@if(Auth::user()->role === 'admin')
-    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-        <x-nav-link :href="route('admin.users')" :active="request()->routeIs('admin.users')" class="text-red-600 font-bold border-red-500">
-            👑 Quản lý Người dùng
-        </x-nav-link>
-    </div>
-    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-        <x-nav-link :href="route('admin.itineraries')" :active="request()->routeIs('admin.itineraries')" class="text-red-600 font-bold border-red-500">
-            🛡️ Kiểm duyệt Lịch trình
-        </x-nav-link>
-    </div>
-@endif
+                    <x-nav-link :href="route('locations.index')" :active="request()->routeIs('locations.*')">
+                        {{ __('Địa điểm') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('itineraries.index')" :active="request()->routeIs('itineraries.*')">
+                        {{ __('Lịch trình của tôi') }}
+                    </x-nav-link>
+
+                    @if(Auth::user()->isAdmin())
+                        <x-nav-link :href="route('admin.users')" :active="request()->routeIs('admin.users')" class="text-red-600 font-bold border-red-500">
+                            Quản lý người dùng
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.itineraries')" :active="request()->routeIs('admin.itineraries')" class="text-red-600 font-bold border-red-500">
+                            Kiểm duyệt lịch trình
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -92,6 +90,23 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('categories.index')" :active="request()->routeIs('categories.*')">
+                {{ __('Danh mục') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('locations.index')" :active="request()->routeIs('locations.*')">
+                {{ __('Địa điểm') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('itineraries.index')" :active="request()->routeIs('itineraries.*')">
+                {{ __('Lịch trình của tôi') }}
+            </x-responsive-nav-link>
+            @if(Auth::user()->isAdmin())
+                <x-responsive-nav-link :href="route('admin.users')" :active="request()->routeIs('admin.users')">
+                    {{ __('Quản lý người dùng') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.itineraries')" :active="request()->routeIs('admin.itineraries')">
+                    {{ __('Kiểm duyệt lịch trình') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->

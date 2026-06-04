@@ -8,11 +8,11 @@ class Location extends Model
 {
     protected $fillable = [
         'user_id',
-        'category_id', 
-        'name', 
-        'description', 
-        'image', 
-        'address'
+        'category_id',
+        'name',
+        'description',
+        'image',
+        'address',
     ];
 
     public function category()

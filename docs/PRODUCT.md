@@ -36,7 +36,7 @@ Use these terms consistently in code and documentation:
 | Schedule stops | Implemented | An itinerary owner can attach locations with visit times and notes. |
 | Export a trip | Implemented | An itinerary owner can download a PDF. |
 | Share a trip | Implemented, limited | Anyone with `/shared/itineraries/{id}` can read the itinerary. |
-| Moderate content | Partially implemented | Admin pages list users and itineraries and allow deletion. Category administration has route and UI inconsistencies. |
+| Moderate content | Partially implemented | Admins can create/delete categories and list/delete users or itineraries. There is no audit trail, soft delete, or recovery flow. |
 | Group membership | Not implemented | There are no group, participant, membership, or invitation tables. |
 | Collaborative editing | Not implemented | Only the itinerary owner can change an itinerary. |
 | Coordination tracking | Not implemented | There are no comments, votes, tasks, decisions, or activity records. |

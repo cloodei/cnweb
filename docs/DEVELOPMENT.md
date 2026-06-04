@@ -61,7 +61,7 @@ Do not commit `.env`.
 
 ## Run The Application
 
-The standard development command starts the Laravel server, queue listener, log viewer, and Vite:
+The standard development command starts the Laravel server, log viewer, and Vite:
 
 ```powershell
 composer run dev
@@ -81,7 +81,7 @@ npm run dev
 
 ## Demo Seed Data
 
-`php artisan migrate --seed` attempts to create three local demo accounts:
+`php artisan migrate --seed` creates or updates three local demo accounts:
 
 | Account | Email | Password |
 | --- | --- | --- |
@@ -89,7 +89,7 @@ npm run dev
 | User A | `usera@gmail.com` | `12345678` |
 | User B | `userb@gmail.com` | `12345678` |
 
-These credentials are for local development only. There is currently a known model-fillable issue that can prevent the intended admin account from receiving the `admin` role. See [Known Gaps](CODEBASE_GUIDE.md#known-gaps).
+These credentials are for local development only. The seeder assigns `role` explicitly, so the admin account should be able to reach the admin pages after seeding.
 
 ## Manual Smoke Test
 
@@ -150,8 +150,8 @@ During development, run `npm run dev` or `composer run dev`.
 
 ### Seeded Admin Cannot Reach Admin Pages
 
-The current `User` mass-assignment configuration omits `role`, so the seeded role may be discarded. Fix the model or assign the role explicitly before relying on seeded admin access.
+Run `php artisan migrate:status` and confirm the users table has been migrated, then run `php artisan db:seed`. If the account already exists, the seeder updates its role.
 
-### Category Buttons Return 403 Or Category Pages Error
+### Category Delete Is Blocked
 
-Category write controls and generated admin resource routes are not fully aligned with `CategoryController`. See [Known Gaps](CODEBASE_GUIDE.md#known-gaps) before extending category administration.
+Categories with locations cannot be deleted through the application. Move or delete the locations first, then retry the category deletion.

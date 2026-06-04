@@ -13,24 +13,36 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        
-        User::create([
-            'name' => 'Quản Trị Viên Cao Cấp',
-            'email' => 'admin@gmail.com',
-            'password' => Hash::make('12345678'), 
-            'role' => 'admin',
-        ]);
-        User::create([
-            'name' => 'Nguyễn Văn A',
-            'email' => 'usera@gmail.com',
-            'password' => Hash::make('12345678'),
-            'role' => 'user',
-        ]);
-        User::create([
-            'name' => 'Trần Thị B',
-            'email' => 'userb@gmail.com',
-            'password' => Hash::make('12345678'),
-            'role' => 'user',
-        ]);
+        $users = [
+            [
+                'name' => 'Quản Trị Viên Cao Cấp',
+                'email' => 'admin@gmail.com',
+                'role' => 'admin',
+            ],
+            [
+                'name' => 'Nguyễn Văn A',
+                'email' => 'usera@gmail.com',
+                'role' => 'user',
+            ],
+            [
+                'name' => 'Trần Thị B',
+                'email' => 'userb@gmail.com',
+                'role' => 'user',
+            ],
+        ];
+
+        foreach ($users as $userData) {
+            $user = User::updateOrCreate(
+                [
+                    'email' => $userData['email']
+                ],
+                [
+                    'name' => $userData['name'],
+                    'password' => Hash::make('12345678'),
+                ],
+            );
+
+            $user->forceFill(['role' => $userData['role']])->save();
+        }
     }
 }
