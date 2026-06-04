@@ -14,9 +14,10 @@ use Illuminate\Notifications\Notifiable;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
-public function itineraries() { return $this->hasMany(Itinerary::class); }
+    public function itineraries() {
+        return $this->hasMany(Itinerary::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *

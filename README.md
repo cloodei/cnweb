@@ -1,58 +1,56 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Travel Planner
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Travel Planner is a Laravel web application for collecting travel destinations and building trip itineraries. Signed-in users can browse a shared destination catalog, contribute locations, build personal schedules, export a trip to PDF, and publish a read-only itinerary link.
 
-## About Laravel
+The longer-term product direction is collaborative trip planning: a group should be able to plan a trip together, coordinate destinations, and track the plan in one place. The current implementation is an early foundation for that product, not a complete group workspace yet.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Start Here
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- [Product intent and scope](docs/PRODUCT.md)
+- [Codebase guide](docs/CODEBASE_GUIDE.md)
+- [Local development runbook](docs/DEVELOPMENT.md)
+- [Instructions for coding agents](AGENTS.md)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Current Features
 
-## Learning Laravel
+- Laravel Breeze registration, login, password reset, and profile pages.
+- Shared travel-location catalog with categories, search, filtering, images, and embedded Google Maps views.
+- User-owned itineraries with scheduled locations and per-stop notes.
+- PDF itinerary export through `barryvdh/laravel-dompdf`.
+- Public read-only itinerary share links.
+- Basic admin pages for user management and itinerary moderation.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Technology
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Area | Choice |
+| --- | --- |
+| Backend | PHP 8.3+, Laravel 13 |
+| Rendering | Blade templates |
+| Frontend | Vite, Tailwind CSS, Alpine.js |
+| Database | SQLite by default; Laravel also supports MySQL, MariaDB, PostgreSQL, and SQL Server |
+| Authentication | Laravel Breeze session authentication |
+| File storage | Laravel `public` disk for location images |
+| PDF export | DOMPDF |
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## Quick Start
 
-## Agentic Development
+The detailed setup guide is in [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md). For a fresh PowerShell checkout using SQLite:
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```powershell
+composer install
+npm install
+Copy-Item .env.example .env
+php artisan key:generate
+New-Item database/database.sqlite -ItemType File -Force
+php artisan migrate --seed
+php artisan storage:link
+composer run dev
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Open `http://127.0.0.1:8000`.
 
-## Contributing
+Your PHP CLI must have `pdo_sqlite` enabled when using SQLite and when running the default PHPUnit configuration.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Important Boundary
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+The application does **not** currently have group memberships, invitations, collaborative itinerary editing, or an activity history. A public share link is read-only and should not be treated as group collaboration. Read [docs/PRODUCT.md](docs/PRODUCT.md) before extending that area.
