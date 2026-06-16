@@ -1,52 +1,47 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Tạo Lịch trình chuyến đi mới') }}
-        </h2>
+        <div>
+            <a href="{{ route('itineraries.index') }}" class="link-quiet text-sm">Quay lại lịch trình</a>
+            <h1 class="section-title mt-2">Tạo lịch trình</h1>
+            <p class="section-subtitle">Lịch trình thuộc tài khoản của bạn và có thể xuất PDF hoặc chia sẻ bản chỉ đọc.</p>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <div class="mb-4">
-                <a href="{{ route('itineraries.index') }}" class="text-gray-600 hover:text-gray-900 font-medium">&larr; Quay lại danh sách</a>
-            </div>
+    <div class="narrow-shell">
+        <section class="surface-panel p-6 sm:p-8">
+            <form action="{{ route('itineraries.store') }}" method="POST" class="space-y-6">
+                @csrf
 
-            <div class="bg-white overflow-hidden shadow-sm rounded-xl p-8 border">
-                <form action="{{ route('itineraries.store') }}" method="POST" class="space-y-6">
-                    @csrf
+                <div>
+                    <label for="title" class="label-quiet block">Tên chuyến đi <span class="text-red-600">*</span></label>
+                    <input type="text" name="title" id="title" value="{{ old('title') }}" class="field-control" placeholder="Ví dụ: Hà Nội 3 ngày 2 đêm" required>
+                    @error('title') <p class="mt-2 text-sm font-medium text-red-700">{{ $message }}</p> @enderror
+                </div>
 
+                <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                     <div>
-                        <label for="title" class="block text-sm font-bold text-gray-700">Tên chuyến đi / Tiêu đề <span class="text-red-500">*</span></label>
-                        <input type="text" name="title" id="title" value="{{ old('title') }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" placeholder="Ví dụ: Du hí Hà Nội 3 ngày 2 đêm" required>
-                        @error('title') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        <label for="start_date" class="label-quiet block">Ngày bắt đầu <span class="text-red-600">*</span></label>
+                        <input type="date" name="start_date" id="start_date" value="{{ old('start_date') }}" class="field-control" required>
+                        @error('start_date') <p class="mt-2 text-sm font-medium text-red-700">{{ $message }}</p> @enderror
                     </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="start_date" class="block text-sm font-bold text-gray-700">Ngày bắt đầu <span class="text-red-500">*</span></label>
-                            <input type="date" name="start_date" id="start_date" value="{{ old('start_date') }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" required>
-                            @error('start_date') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                        </div>
-                        <div>
-                            <label for="end_date" class="block text-sm font-bold text-gray-700">Ngày kết thúc <span class="text-red-500">*</span></label>
-                            <input type="date" name="end_date" id="end_date" value="{{ old('end_date') }}" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" required>
-                            @error('end_date') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                        </div>
-                    </div>
-
                     <div>
-                        <label for="description" class="block text-sm font-bold text-gray-700">Ghi chú chuyến đi</label>
-                        <textarea name="description" id="description" rows="4" class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500" placeholder="Nhập mục tiêu chuyến đi hoặc chuẩn bị hành lý...">{{ old('description') }}</textarea>
-                        @error('description') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        <label for="end_date" class="label-quiet block">Ngày kết thúc <span class="text-red-600">*</span></label>
+                        <input type="date" name="end_date" id="end_date" value="{{ old('end_date') }}" class="field-control" required>
+                        @error('end_date') <p class="mt-2 text-sm font-medium text-red-700">{{ $message }}</p> @enderror
                     </div>
+                </div>
 
-                    <div class="pt-4">
-                        <button type="submit" class="w-full sm:w-auto inline-flex justify-center py-3 px-8 border border-transparent shadow text-sm font-bold rounded-xl text-white bg-teal-600 hover:bg-teal-700 transition-all">
-                            Khởi tạo chuyến đi
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+                <div>
+                    <label for="description" class="label-quiet block">Ghi chú chuyến đi</label>
+                    <textarea name="description" id="description" rows="4" class="field-control" placeholder="Mục tiêu chuyến đi, chuẩn bị, hoặc ghi chú chung">{{ old('description') }}</textarea>
+                    @error('description') <p class="mt-2 text-sm font-medium text-red-700">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="flex flex-col gap-3 pt-2 sm:flex-row">
+                    <button type="submit" class="action-primary">Tạo lịch trình</button>
+                    <a href="{{ route('itineraries.index') }}" class="action-secondary">Hủy</a>
+                </div>
+            </form>
+        </section>
     </div>
 </x-app-layout>

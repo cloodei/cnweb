@@ -1,83 +1,74 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Chỉnh sửa Địa điểm') }}: {{ $location->name }}
-        </h2>
+        <div>
+            <a href="{{ route('locations.index') }}" class="link-quiet text-sm">Quay lại địa điểm</a>
+            <h1 class="section-title mt-2">Chỉnh sửa địa điểm</h1>
+            <p class="section-subtitle">{{ $location->name }}</p>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            
-            <div class="mb-4">
-                <a href="{{ route('locations.index') }}" class="text-indigo-600 hover:text-indigo-900 font-medium">&larr; Quay lại</a>
-            </div>
+    <div class="narrow-shell">
+        <section class="surface-panel p-6 sm:p-8">
+            <form action="{{ route('locations.update', $location) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+                @csrf
+                @method('PUT')
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-8">
-                <form action="{{ route('locations.update', $location) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
-                    @csrf
-                    @method('PUT')
+                <div>
+                    <label for="name" class="label-quiet block">Tên địa điểm <span class="text-red-600">*</span></label>
+                    <input type="text" name="name" id="name" value="{{ old('name', $location->name) }}" class="field-control" required>
+                    @error('name') <p class="mt-2 text-sm font-medium text-red-700">{{ $message }}</p> @enderror
+                </div>
 
-                    <div>
-                        <label for="name" class="block text-sm font-medium text-gray-700">Tên địa điểm <span class="text-red-500">*</span></label>
-                        <input type="text" name="name" id="name" value="{{ old('name', $location->name) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
-                        @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                    </div>
+                <div>
+                    <label for="category_id" class="label-quiet block">Danh mục <span class="text-red-600">*</span></label>
+                    <select name="category_id" id="category_id" class="field-control" required>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}" {{ (old('category_id', $location->category_id) == $category->id) ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('category_id') <p class="mt-2 text-sm font-medium text-red-700">{{ $message }}</p> @enderror
+                </div>
 
-                    <div>
-                        <label for="category_id" class="block text-sm font-medium text-gray-700">Danh mục <span class="text-red-500">*</span></label>
-                        <select name="category_id" id="category_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
-                            @foreach($categories as $category)
-                                <option value="{{ $category->id }}" {{ (old('category_id', $location->category_id) == $category->id) ? 'selected' : '' }}>
-                                    {{ $category->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('category_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                    </div>
+                <div>
+                    <label class="label-quiet block">Hình ảnh</label>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Hình ảnh</label>
-                        
-                        <div class="mt-2 mb-4">
-                            @if($location->image)
-                                <p class="text-xs text-gray-500 mb-1">Ảnh hiện tại:</p>
-                                <img src="{{ asset('storage/' . $location->image) }}" alt="Current" class="h-32 w-auto object-cover rounded-lg border">
-                            @endif
+                    @if($location->image)
+                        <div class="mt-3">
+                            <p class="mb-2 text-sm font-semibold text-stone-500">Ảnh hiện tại</p>
+                            <img src="{{ asset('storage/' . $location->image) }}" alt="{{ $location->name }}" class="h-40 w-full rounded-md border border-stone-200 object-cover sm:w-80">
                         </div>
+                    @endif
 
-                        <label for="imageInput" class="block text-sm font-medium text-gray-500">Thay ảnh mới (nếu muốn):</label>
-                        <input type="file" name="image" id="imageInput" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                        @error('image') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                        
-                        <div class="mt-4 hidden" id="previewContainer">
-                            <p class="text-xs text-gray-500 mb-1">Ảnh mới sẽ thay thế:</p>
-                            <img id="imagePreview" src="" alt="New Preview" class="h-32 w-auto object-cover rounded-lg border shadow-sm">
-                        </div>
-                    </div>
+                    <label for="imageInput" class="mt-4 block text-sm font-semibold text-stone-500">Thay ảnh mới</label>
+                    <input type="file" name="image" id="imageInput" accept="image/*" class="field-file">
+                    @error('image') <p class="mt-2 text-sm font-medium text-red-700">{{ $message }}</p> @enderror
 
-                    <div>
-                        <label for="description" class="block text-sm font-medium text-gray-700">Mô tả</label>
-                        <textarea name="description" id="description" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('description', $location->description) }}</textarea>
-                        @error('description') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    <div class="mt-4 hidden" id="previewContainer">
+                        <p class="mb-2 text-sm font-semibold text-stone-500">Ảnh mới</p>
+                        <img id="imagePreview" src="" alt="Ảnh mới xem trước" class="h-40 w-full rounded-md border border-stone-200 object-cover shadow-sm sm:w-80">
                     </div>
+                </div>
 
-                    <div>
-                        <label for="address" class="block text-sm font-medium text-gray-700">Địa chỉ thực tế</label>
-                        <input type="text" name="address" id="address" value="{{ old('address', $location->address) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Ví dụ: Phường Bãi Cháy, TP. Hạ Long">
-                        @error('address') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                    </div>
+                <div>
+                    <label for="description" class="label-quiet block">Mô tả</label>
+                    <textarea name="description" id="description" rows="4" class="field-control">{{ old('description', $location->description) }}</textarea>
+                    @error('description') <p class="mt-2 text-sm font-medium text-red-700">{{ $message }}</p> @enderror
+                </div>
 
-                    <div class="pt-4 flex gap-3">
-                        <button type="submit" class="inline-flex justify-center py-2 px-8 border border-transparent shadow-sm text-sm font-bold rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition-all">
-                            Cập nhật thay đổi
-                        </button>
-                        <a href="{{ route('locations.index') }}" class="inline-flex justify-center py-2 px-8 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                            Hủy
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>
+                <div>
+                    <label for="address" class="label-quiet block">Địa chỉ thực tế</label>
+                    <input type="text" name="address" id="address" value="{{ old('address', $location->address) }}" class="field-control" placeholder="Ví dụ: Phường Bãi Cháy, TP. Hạ Long">
+                    @error('address') <p class="mt-2 text-sm font-medium text-red-700">{{ $message }}</p> @enderror
+                </div>
+
+                <div class="flex flex-col gap-3 pt-2 sm:flex-row">
+                    <button type="submit" class="action-primary">Cập nhật</button>
+                    <a href="{{ route('locations.index') }}" class="action-secondary">Hủy</a>
+                </div>
+            </form>
+        </section>
     </div>
 
     <script>

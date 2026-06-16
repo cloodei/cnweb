@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <title>Lịch trình: {{ $itinerary->title }}</title>
     <style>
-        body { font-family: DejaVu Sans, sans-serif; font-size: 14px; line-height: 1.5; color: #333; }
-        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #0d9488; padding-bottom: 10px; }
-        .title { font-size: 24px; font-weight: bold; color: #0d9488; text-transform: uppercase; margin: 0; }
-        .meta { color: #666; margin-top: 5px; font-style: italic; }
-        table { w-full; border-collapse: collapse; margin-top: 20px; width: 100%; }
-        th { background-color: #f3f4f6; padding: 10px; border: 1px solid #ddd; text-align: left; font-weight: bold; }
-        td { padding: 10px; border: 1px solid #ddd; vertical-align: top; }
-        .time { font-weight: bold; color: #0d9488; }
-        .note { font-size: 12px; color: #666; margin-top: 5px; background: #f9fafb; padding: 5px; }
+        body { font-family: DejaVu Sans, sans-serif; font-size: 14px; line-height: 1.55; color: #292524; background: #fbfaf7; }
+        .header { text-align: center; margin-bottom: 28px; border-bottom: 2px solid #166534; padding-bottom: 14px; }
+        .title { font-size: 24px; font-weight: bold; color: #1c1917; margin: 0; }
+        .meta { color: #57534e; margin-top: 6px; }
+        table { border-collapse: collapse; margin-top: 20px; width: 100%; background: #fff; }
+        th { background-color: #f5f5f4; padding: 10px; border: 1px solid #d6d3d1; text-align: left; font-weight: bold; color: #44403c; }
+        td { padding: 10px; border: 1px solid #d6d3d1; vertical-align: top; }
+        .time { font-weight: bold; color: #166534; }
+        .note { font-size: 12px; color: #57534e; margin-top: 5px; background: #f5f5f4; padding: 6px; border: 1px dashed #d6d3d1; }
     </style>
 </head>
 <body>
@@ -24,7 +24,7 @@
 
     @if($itinerary->description)
         <div style="margin-bottom: 20px;">
-            <strong>Mục tiêu chuyến đi:</strong> {{ $itinerary->description }}
+            <strong>Ghi chú chuyến đi:</strong> {{ $itinerary->description }}
         </div>
     @endif
 

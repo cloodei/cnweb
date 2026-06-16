@@ -1,56 +1,54 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-red-600 leading-tight border-b-2 border-red-500 pb-2 inline-block">
-            👑 Quản lý Tài khoản Người dùng
-        </h2>
+        <div>
+            <p class="text-sm font-semibold text-red-700">Khu vực admin</p>
+            <h1 class="section-title">Quản lý người dùng</h1>
+            <p class="section-subtitle">Danh sách tài khoản và thao tác xóa tài khoản không phải admin.</p>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if (session('success'))
-                <div class="p-4 mb-6 rounded-xl bg-green-50 border border-green-100 text-green-800 shadow-sm">
-                    {{ session('success') }}
-                </div>
-            @endif
-            @if (session('error'))
-                <div class="p-4 mb-6 rounded-xl bg-red-50 border border-red-100 text-red-800 shadow-sm">
-                    {{ session('error') }}
-                </div>
-            @endif
+    <div class="page-shell space-y-6">
+        @if (session('success'))
+            <div class="alert-success">{{ session('success') }}</div>
+        @endif
+        @if (session('error'))
+            <div class="alert-error">{{ session('error') }}</div>
+        @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+        <section class="table-shell">
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="table-head">
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">ID</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Tên người dùng</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Email</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Vai trò</th>
-                            <th class="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Hành động</th>
+                            <th class="px-5 py-3">ID</th>
+                            <th class="px-5 py-3">Tên người dùng</th>
+                            <th class="px-5 py-3">Email</th>
+                            <th class="px-5 py-3">Vai trò</th>
+                            <th class="px-5 py-3 text-right">Hành động</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-100">
+                    <tbody>
                         @foreach ($users as $user)
-                            <tr class="hover:bg-gray-50 transition-colors">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">#{{ $user->id }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap font-bold text-gray-900">{{ $user->name }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $user->email }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                            <tr class="table-row">
+                                <td class="table-cell">#{{ $user->id }}</td>
+                                <td class="table-cell font-semibold text-stone-950">{{ $user->name }}</td>
+                                <td class="table-cell">{{ $user->email }}</td>
+                                <td class="table-cell">
                                     @if($user->role === 'admin')
-                                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Admin</span>
+                                        <span class="badge-danger">Admin</span>
                                     @else
-                                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">User</span>
+                                        <span class="badge">Người dùng</span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <td class="table-cell text-right">
                                     @if($user->role !== 'admin')
                                         <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa tài khoản này vĩnh viễn?');">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-900 font-bold bg-red-50 px-3 py-1.5 rounded-lg transition-colors">Xóa tài khoản</button>
+                                            <button type="submit" class="font-semibold text-red-700 hover:text-red-900">Xóa tài khoản</button>
                                         </form>
                                     @else
-                                        <span class="text-gray-400 text-xs italic">Bất tử</span>
+                                        <span class="text-sm text-stone-400">Không thể xóa</span>
                                     @endif
                                 </td>
                             </tr>
@@ -58,6 +56,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+        </section>
     </div>
 </x-app-layout>

@@ -1,39 +1,39 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center gap-4">
-            <a href="{{ route('categories.index') }}" class="text-gray-500 hover:text-gray-700">&larr; Quay lại</a>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Danh mục: <span class="text-indigo-600">{{ $category->name }}</span>
-            </h2>
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <a href="{{ route('categories.index') }}" class="link-quiet text-sm">Quay lại danh mục</a>
+                <h1 class="section-title mt-2">{{ $category->name }}</h1>
+                <p class="section-subtitle">Các địa điểm đang thuộc danh mục này.</p>
+            </div>
+            <span class="badge-accent">{{ $locations->count() }} địa điểm</span>
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                <h3 class="text-lg font-bold mb-4 text-gray-800">Các địa điểm thuộc "{{ $category->name }}"</h3>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    @forelse ($locations as $location)
-                        <div class="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+    <div class="page-shell">
+        <section class="surface-panel p-5 sm:p-6">
+            @if($locations->isEmpty())
+                <div class="empty-state">
+                    <p>Chưa có địa điểm nào trong danh mục này.</p>
+                    <a href="{{ route('locations.create') }}" class="link-quiet mt-3 inline-flex">Thêm địa điểm đầu tiên</a>
+                </div>
+            @else
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    @foreach ($locations as $location)
+                        <a href="{{ route('locations.show', $location) }}" class="group overflow-hidden rounded-lg border border-stone-200 bg-white shadow-sm hover:border-emerald-300">
                             @if($location->image)
-                                <img src="{{ asset('storage/' . $location->image) }}" alt="{{ $location->name }}" class="w-full h-48 object-cover">
+                                <img src="{{ asset('storage/' . $location->image) }}" alt="{{ $location->name }}" class="h-48 w-full object-cover">
                             @else
-                                <div class="w-full h-48 bg-gray-200 flex items-center justify-center text-gray-400">Không có ảnh</div>
+                                <div class="flex h-48 w-full items-center justify-center bg-stone-100 text-sm font-semibold text-stone-400">Không có ảnh</div>
                             @endif
                             <div class="p-4">
-                                <h4 class="font-bold text-lg text-gray-900">{{ $location->name }}</h4>
-                                <p class="text-sm text-gray-500 mt-2">{{ str()->limit($location->description, 80) }}</p>
+                                <h2 class="text-base font-semibold text-stone-950 group-hover:text-emerald-900">{{ $location->name }}</h2>
+                                <p class="mt-2 text-sm leading-6 text-stone-600">{{ str()->limit($location->description, 96) }}</p>
                             </div>
-                        </div>
-                    @empty
-                        <div class="col-span-full text-center py-8 text-gray-500">
-                            Chưa có địa điểm nào trong danh mục này. 
-                            <a href="{{ route('locations.create') }}" class="text-indigo-600 font-bold">Thêm ngay!</a>
-                        </div>
-                    @endforelse
+                        </a>
+                    @endforeach
                 </div>
-            </div>
-        </div>
+            @endif
+        </section>
     </div>
 </x-app-layout>

@@ -1,55 +1,55 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-red-600 leading-tight border-b-2 border-red-500 pb-2 inline-block">
-            🛡️ Kiểm duyệt Lịch trình Cộng đồng
-        </h2>
+        <div>
+            <p class="text-sm font-semibold text-red-700">Khu vực admin</p>
+            <h1 class="section-title">Kiểm duyệt lịch trình</h1>
+            <p class="section-subtitle">Xem bản chia sẻ chỉ đọc và gỡ lịch trình khi cần moderation.</p>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            @if (session('success'))
-                <div class="p-4 mb-6 rounded-xl bg-green-50 border border-green-100 text-green-800 shadow-sm">
-                    {{ session('success') }}
-                </div>
-            @endif
+    <div class="page-shell space-y-6">
+        @if (session('success'))
+            <div class="alert-success">{{ session('success') }}</div>
+        @endif
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-2xl border border-gray-100">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+        <section class="table-shell">
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="table-head">
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Tên Lịch Trình</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Người Tạo</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Thời gian</th>
-                            <th class="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Kiểm duyệt</th>
+                            <th class="px-5 py-3">Tên lịch trình</th>
+                            <th class="px-5 py-3">Người tạo</th>
+                            <th class="px-5 py-3">Thời gian</th>
+                            <th class="px-5 py-3 text-right">Kiểm duyệt</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-100">
+                    <tbody>
                         @foreach ($itineraries as $itinerary)
-                            <tr class="hover:bg-gray-50 transition-colors">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-bold text-gray-900">{{ $itinerary->title }}</div>
+                            <tr class="table-row">
+                                <td class="table-cell font-semibold text-stone-950">{{ $itinerary->title }}</td>
+                                <td class="table-cell">
+                                    <div class="font-semibold text-stone-900">{{ $itinerary->user->name ?? 'Người dùng đã bị xóa' }}</div>
+                                    <div class="text-xs text-stone-500">{{ $itinerary->user->email ?? '' }}</div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm text-gray-900 font-medium">{{ $itinerary->user->name ?? 'Người dùng đã bị xóa' }}</div>
-                                    <div class="text-xs text-gray-500">{{ $itinerary->user->email ?? '' }}</div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <td class="table-cell">
                                     {{ date('d/m/Y', strtotime($itinerary->start_date)) }} - {{ date('d/m/Y', strtotime($itinerary->end_date)) }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex justify-end gap-2">
-                                    <a href="{{ route('itineraries.shared', $itinerary) }}" target="_blank" class="text-indigo-600 hover:text-indigo-900 font-bold bg-indigo-50 px-3 py-1.5 rounded-lg transition-colors">Xem thử</a>
-                                    
-                                    <form action="{{ route('admin.itineraries.destroy', $itinerary) }}" method="POST" onsubmit="return confirm('Gỡ bỏ lịch trình vi phạm này khỏi hệ thống?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900 font-bold bg-red-50 px-3 py-1.5 rounded-lg transition-colors">Gỡ bỏ (Xóa)</button>
-                                    </form>
+                                <td class="table-cell text-right">
+                                    <div class="flex justify-end gap-3">
+                                        <a href="{{ route('itineraries.shared', $itinerary) }}" target="_blank" class="font-semibold text-emerald-800 hover:text-stone-950">Xem bản chia sẻ</a>
+
+                                        <form action="{{ route('admin.itineraries.destroy', $itinerary) }}" method="POST" onsubmit="return confirm('Gỡ bỏ lịch trình này khỏi hệ thống?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="font-semibold text-red-700 hover:text-red-900">Gỡ bỏ</button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
-        </div>
+        </section>
     </div>
 </x-app-layout>

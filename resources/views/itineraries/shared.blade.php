@@ -4,77 +4,97 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Chuyến đi: {{ $itinerary->title }}</title>
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=fraunces:600,700|nunito-sans:400,500,600,700&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-100 font-sans antialiased">
-    <div class="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-        <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
-            
-            <div class="bg-teal-600 px-8 py-10 text-white text-center">
-                <h1 class="text-3xl font-extrabold mb-2">{{ $itinerary->title }}</h1>
-                <p class="text-teal-100">Khởi hành: {{ date('d/m/Y', strtotime($itinerary->start_date)) }} - {{ date('d/m/Y', strtotime($itinerary->end_date)) }}</p>
-                <p class="mt-4 text-sm bg-teal-700 inline-block px-4 py-1 rounded-full border border-teal-500">
-                    Chủ phòng: <strong>{{ $itinerary->user->name }}</strong>
-                </p>
-            </div>
-            
-            <div class="p-8">
-                <h3 class="text-xl font-bold text-gray-800 mb-6 border-b pb-2">Lộ trình chi tiết</h3>
-                
-                @if($scheduledLocations->isEmpty())
-                    <p class="text-gray-500 text-center py-8">Chuyến đi này đang được lên kế hoạch, chưa có điểm dừng chân nào.</p>
-                @else
-                    <div class="relative border-l-2 border-teal-200 ml-4 space-y-8 pb-4">
-                        @foreach($scheduledLocations as $sl)
-                            <div class="relative pl-8">
-                                <span class="absolute -left-[11px] top-1.5 bg-teal-500 w-5 h-5 rounded-full border-4 border-white shadow-sm"></span>
-                                <div class="bg-gray-50 rounded-xl p-5 border border-gray-100 flex flex-col sm:flex-row gap-4 hover:bg-white hover:shadow-sm transition-all">
-                                    @if($sl->image)
-                                        <img src="{{ asset('storage/' . $sl->image) }}" class="w-full sm:w-32 h-24 object-cover rounded-lg shadow-sm">
-                                    @endif
-                                    <div class="flex-1">
-                                        <div class="flex flex-wrap justify-between items-start mb-2 gap-2">
-                                            <h4 class="text-lg font-bold text-gray-900">{{ $sl->name }}</h4>
-                                            @if($sl->pivot->visit_time)
-                                                <span class="text-xs font-semibold text-teal-800 bg-teal-100 px-2.5 py-1 rounded-md">
-                                                    ⏰ {{ date('H:i - d/m/Y', strtotime($sl->pivot->visit_time)) }}
-                                                </span>
-                                            @endif
-                                        </div>
-                                        <p class="text-sm text-gray-500 mb-2">📍 {{ $sl->address ?? 'Chưa có địa chỉ' }}</p>
-                                        @if($sl->pivot->note)
-                                            <div class="bg-white p-3 rounded-lg border border-dashed border-gray-200 text-sm text-gray-600">
-                                                <span class="font-bold text-xs text-gray-400 uppercase tracking-wider block mb-1">Ghi chú:</span>
-                                                {{ $sl->pivot->note }}
-                                            </div>
-                                        @endif
+<body class="font-sans">
+    <div class="min-h-screen">
+        <header class="mx-auto flex max-w-4xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
+            <a href="{{ url('/') }}" class="flex items-center gap-3 text-stone-950">
+                <span class="grid h-10 w-10 place-items-center rounded-lg border border-stone-300 bg-white shadow-sm">
+                    <x-application-logo class="h-6 w-6 text-emerald-900" />
+                </span>
+                <span class="font-display text-xl font-semibold">Travel Planner</span>
+            </a>
+            <span class="badge">Bản xem chỉ đọc</span>
+        </header>
 
-                                        <div class="mt-4 w-full h-44 rounded-xl overflow-hidden border border-gray-200 shadow-sm">
-    <iframe 
-        width="100%" 
-        height="100%" 
-        frameborder="0" 
-        style="border:0" 
-        src="https://maps.google.com/maps?q={{ urlencode($sl->address ?? $sl->name) }}&t=&z=14&ie=UTF8&iwloc=&output=embed" 
-        allowfullscreen>
-    </iframe>
-</div>
+        <main class="mx-auto max-w-4xl px-4 pb-12 sm:px-6 lg:px-8">
+            <section class="surface-panel overflow-hidden">
+                <div class="border-b border-stone-200 bg-white p-6 text-center sm:p-8">
+                    <p class="text-sm font-semibold text-emerald-900">Lịch trình được chia sẻ</p>
+                    <h1 class="mt-3 font-display text-4xl font-semibold leading-tight text-stone-950">{{ $itinerary->title }}</h1>
+                    <p class="mt-3 text-sm text-stone-600">
+                        {{ date('d/m/Y', strtotime($itinerary->start_date)) }} - {{ date('d/m/Y', strtotime($itinerary->end_date)) }}
+                    </p>
+                    <p class="mt-4 inline-flex rounded-full border border-stone-200 bg-stone-100 px-3 py-1 text-sm font-semibold text-stone-700">
+                        Người lập: {{ $itinerary->user->name }}
+                    </p>
+                </div>
+
+                <div class="p-5 sm:p-8">
+                    @if($itinerary->description)
+                        <div class="mb-6 rounded-lg border border-stone-200 bg-stone-50 p-4">
+                            <p class="text-sm font-semibold text-stone-500">Ghi chú chuyến đi</p>
+                            <p class="mt-2 whitespace-pre-line text-sm leading-7 text-stone-700">{{ $itinerary->description }}</p>
+                        </div>
+                    @endif
+
+                    <h2 class="card-title">Lộ trình chi tiết</h2>
+
+                    @if($scheduledLocations->isEmpty())
+                        <div class="empty-state mt-5">Chuyến đi này đang được lên kế hoạch, chưa có điểm dừng nào.</div>
+                    @else
+                        <div class="mt-5 space-y-4">
+                            @foreach($scheduledLocations as $sl)
+                                <article class="rounded-lg border border-stone-200 bg-stone-50 p-4">
+                                    <div class="flex flex-col gap-4 sm:flex-row">
+                                        @if($sl->image)
+                                            <img src="{{ asset('storage/' . $sl->image) }}" alt="{{ $sl->name }}" class="h-32 w-full rounded-md border border-stone-200 object-cover sm:w-40">
+                                        @endif
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                                                <div>
+                                                    <h3 class="text-lg font-semibold text-stone-950">{{ $sl->name }}</h3>
+                                                    <p class="mt-1 text-sm text-stone-600">{{ $sl->address ?? 'Chưa có địa chỉ' }}</p>
+                                                </div>
+                                                @if($sl->pivot->visit_time)
+                                                    <span class="badge-accent">{{ date('H:i - d/m/Y', strtotime($sl->pivot->visit_time)) }}</span>
+                                                @endif
+                                            </div>
+
+                                            @if($sl->pivot->note)
+                                                <div class="mt-4 rounded-md border border-dashed border-stone-300 bg-white p-3">
+                                                    <p class="text-xs font-semibold text-stone-500">Ghi chú</p>
+                                                    <p class="mt-1 whitespace-pre-line text-sm leading-6 text-stone-700">{{ $sl->pivot->note }}</p>
+                                                </div>
+                                            @endif
+
+                                            <div class="mt-4 h-44 overflow-hidden rounded-md border border-stone-200 bg-stone-100">
+                                                <iframe
+                                                    width="100%"
+                                                    height="100%"
+                                                    frameborder="0"
+                                                    style="border:0"
+                                                    src="https://maps.google.com/maps?q={{ urlencode($sl->address ?? $sl->name) }}&t=&z=14&ie=UTF8&iwloc=&output=embed"
+                                                    allowfullscreen>
+                                                </iframe>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @endif
-            </div>
-            
-            <div class="bg-gray-50 px-8 py-6 text-center border-t border-gray-100">
-                <p class="text-sm text-gray-500 mb-2">Bạn cũng muốn tạo một lịch trình tuyệt vời như thế này?</p>
-                <a href="{{ url('/') }}" class="text-teal-600 font-bold hover:text-teal-800 hover:underline">
-                    Sử dụng Travel App miễn phí ngay &rarr;
-                </a>
-            </div>
-            
-        </div>
+                                </article>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+
+                <footer class="border-t border-stone-200 bg-stone-50 px-6 py-5 text-center">
+                    <p class="text-sm text-stone-600">Link này chỉ dùng để xem lịch trình, không cấp quyền chỉnh sửa.</p>
+                    <a href="{{ url('/') }}" class="link-quiet mt-2 inline-flex text-sm">Mở Travel Planner</a>
+                </footer>
+            </section>
+        </main>
     </div>
 </body>
 </html>
