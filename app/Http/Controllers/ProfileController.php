@@ -14,8 +14,12 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View
+    public function edit(Request $request): View|RedirectResponse
     {
+        if ($request->user()->isAdmin()) {
+            return Redirect::route('admin.dashboard');
+        }
+
         return view('profile.edit', [
             'user' => $request->user(),
         ]);
@@ -26,6 +30,10 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
+        if ($request->user()->isAdmin()) {
+            return Redirect::route('admin.dashboard');
+        }
+
         $request->user()->fill($request->validated());
 
         if ($request->user()->isDirty('email')) {
@@ -42,6 +50,10 @@ class ProfileController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        if ($request->user()->isAdmin()) {
+            abort(403, 'Tài khoản admin không dùng luồng hồ sơ cá nhân.');
+        }
+
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
         ]);

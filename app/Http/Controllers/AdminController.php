@@ -2,16 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Itinerary;
+use App\Models\Location;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class AdminController extends Controller
 {
+    public function dashboard(): View
+    {
+        $totalUsers = User::count();
+        $adminUsers = User::where('role', 'admin')->count();
+        $totalItineraries = Itinerary::count();
+        $totalLocations = Location::count();
+        $totalCategories = Category::count();
+
+        return view('admin.dashboard', compact(
+            'totalUsers',
+            'adminUsers',
+            'totalItineraries',
+            'totalLocations',
+            'totalCategories',
+        ));
+    }
+
     public function manageUsers(): View
     {
-        // $users = User::latest()->get();
         $users = User::orderBy('created_at', 'desc')->get();
 
         return view('admin.users', compact('users'));

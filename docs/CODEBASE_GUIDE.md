@@ -107,7 +107,7 @@ Admin routes use `auth` and the custom `admin` middleware alias configured in `b
 - Middleware: `app/Http/Middleware/AdminMiddleware.php`
 - Views: `resources/views/admin/*`
 
-Admins can view users, delete non-admin users, view itineraries, delete itineraries, and reach category write routes.
+Admins enter a separate moderation console at `/admin`. They can view users, delete non-admin users, view itineraries, delete itineraries, and reach category write routes.
 
 ## Data Model
 
@@ -177,7 +177,7 @@ Important schema behavior:
 | Itineraries | `/itineraries/*` | Signed in; controller restricts records to owner |
 | Itinerary stops | `POST /itineraries/{itinerary}/add-location`, `DELETE /itineraries/{itinerary}/remove-stop/{stop}` | Signed in itinerary owner |
 | PDF export | `GET /itineraries/{itinerary}/pdf` | Signed in itinerary owner |
-| Admin moderation | `/admin/users`, `/admin/itineraries` | Admin |
+| Admin moderation | `/admin`, `/admin/users`, `/admin/itineraries` | Admin |
 
 Use `php artisan route:list --except-vendor` as the source of truth when routes change.
 
@@ -205,7 +205,7 @@ Use `php artisan route:list --except-vendor` as the source of truth when routes 
 
 1. The request enters the `auth` plus `admin` route group.
 2. `AdminMiddleware` checks `Auth::user()->isAdmin()`.
-3. `AdminController` lists or deletes users and itineraries.
+3. `AdminController` renders the admin console, then lists or deletes users and itineraries from dedicated admin screens.
 
 ## Frontend Notes
 
@@ -213,7 +213,9 @@ Use `php artisan route:list --except-vendor` as the source of truth when routes 
 - Blade pages use Tailwind utility classes.
 - Alpine.js is initialized in `resources/js/app.js`.
 - Axios is initialized in `resources/js/bootstrap.js`, but there is no custom AJAX flow yet.
-- Authenticated pages load SweetAlert2 from a CDN in `resources/views/layouts/app.blade.php`.
+- Authenticated user pages use a sidebar in `resources/views/layouts/navigation.blade.php`.
+- Admin pages use a separate dark console layout in `resources/views/layouts/admin.blade.php`.
+- Authenticated user pages load SweetAlert2 from a CDN in `resources/views/layouts/app.blade.php`.
 - The welcome page and dashboard load remote Unsplash images.
 
 ## Known Gaps

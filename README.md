@@ -18,7 +18,7 @@ The longer-term product direction is collaborative trip planning: a group should
 - User-owned itineraries with scheduled locations and per-stop notes.
 - PDF itinerary export through `barryvdh/laravel-dompdf`.
 - Public read-only itinerary share links.
-- Basic admin pages for user management and itinerary moderation.
+- Basic admin console for user management and itinerary moderation.
 
 ## Technology
 

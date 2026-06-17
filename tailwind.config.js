@@ -12,8 +12,9 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['"Nunito Sans"', ...defaultTheme.fontFamily.sans],
-                display: ['Fraunces', ...defaultTheme.fontFamily.serif],
+                sans: ['"Atkinson Hyperlegible"', ...defaultTheme.fontFamily.sans],
+                display: ['Literata', ...defaultTheme.fontFamily.serif],
+                mono: ['"IBM Plex Mono"', ...defaultTheme.fontFamily.mono],
             },
         },
     },

@@ -42,11 +42,17 @@
                     </div>
                 </div>
 
-                <img
-                    src="https://images.unsplash.com/photo-1499678329028-101435549a4e?auto=format&fit=crop&w=1200&q=85"
-                    alt="Góc bàn với bản đồ và sổ tay du lịch"
-                    class="h-72 w-full object-cover lg:h-full lg:min-h-[20rem]"
+                <div
+                    class="min-h-72 bg-stone-900 bg-cover bg-center p-6 text-white lg:min-h-[20rem]"
+                    style="background-image: linear-gradient(120deg, rgba(28, 25, 23, .84), rgba(28, 25, 23, .24)), url('https://images.unsplash.com/photo-1499678329028-101435549a4e?auto=format&fit=crop&w=1200&q=85');"
+                    role="img"
+                    aria-label="Góc bàn với bản đồ và sổ tay du lịch"
                 >
+                    <div class="flex h-full min-h-60 flex-col justify-end">
+                        <p class="font-mono text-xs font-semibold text-stone-300">READ ONLY SHARE</p>
+                        <p class="mt-2 max-w-sm font-display text-2xl font-semibold leading-tight">Xuất PDF hoặc gửi link xem khi lịch trình đã sẵn sàng.</p>
+                    </div>
+                </div>
             </div>
         </section>
 
