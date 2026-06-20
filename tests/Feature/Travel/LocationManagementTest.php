@@ -44,6 +44,39 @@ class LocationManagementTest extends TestCase
         ]);
     }
 
+    public function test_location_update_can_clear_address(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::create(['name' => 'Biển']);
+        $location = Location::create([
+            'category_id' => $category->id,
+            'user_id' => $user->id,
+            'name' => 'Tên cũ',
+            'description' => 'Mô tả cũ',
+            'address' => 'Địa chỉ cũ',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->put(route('locations.update', $location), [
+                'name' => 'Tên mới',
+                'category_id' => $category->id,
+                'description' => 'Mô tả mới',
+                'address' => '',
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('locations.index', absolute: false));
+
+        $this->assertDatabaseHas('locations', [
+            'id' => $location->id,
+            'name' => 'Tên mới',
+            'description' => 'Mô tả mới',
+            'address' => null,
+        ]);
+    }
+
     public function test_non_owner_cannot_update_location(): void
     {
         $owner = User::factory()->create();

@@ -100,7 +100,7 @@ class LocationController extends Controller
         try {
             $location->update([
                 ...$validated,
-                'address' => $request->has('address') ? $validated['address'] ?? null : $location->address,
+                'address' => $request->exists('address') ? ($validated['address'] ?? null) : $location->address,
                 'image' => $newImagePath ?? $oldImagePath,
             ]);
         } catch (Throwable $exception) {
