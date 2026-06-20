@@ -123,7 +123,7 @@ class LocationController extends Controller
         $this->authorizeLocationMutation($location);
 
         $oldImagePath = $location->image;
-        $location->delete($location->id);
+        $location->delete();
 
         if ($oldImagePath) {
             Storage::disk('public')->delete($oldImagePath);

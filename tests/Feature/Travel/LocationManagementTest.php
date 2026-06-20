@@ -97,4 +97,28 @@ class LocationManagementTest extends TestCase
 
         $response->assertForbidden();
     }
+
+    public function test_location_owner_can_delete_location(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::create(['name' => 'Biển']);
+        $location = Location::create([
+            'category_id' => $category->id,
+            'user_id' => $user->id,
+            'name' => 'Địa điểm cần xóa',
+            'description' => 'Mô tả',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->delete(route('locations.destroy', $location));
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('locations.index', absolute: false));
+
+        $this->assertDatabaseMissing('locations', [
+            'id' => $location->id,
+        ]);
+    }
 }
