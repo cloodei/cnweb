@@ -23,24 +23,53 @@ class CategoryManagementTest extends TestCase
         $response
             ->assertOk()
             ->assertSee('Biển')
-            ->assertDontSee('Thêm danh mục mới')
+            ->assertDontSee('Thêm danh mục')
             ->assertDontSee('Xóa');
+    }
+
+    public function test_regular_users_cannot_open_category_management(): void
+    {
+        $response = $this
+            ->actingAs(User::factory()->create())
+            ->get(route('admin.categories'));
+
+        $response->assertForbidden();
     }
 
     public function test_admin_can_create_category(): void
     {
         $response = $this
             ->actingAs(User::factory()->admin()->create())
-            ->post(route('categories.store'), [
+            ->post(route('admin.categories.store'), [
                 'name' => 'Núi',
             ]);
 
         $response
             ->assertSessionHasNoErrors()
-            ->assertRedirect(route('categories.index', absolute: false));
+            ->assertRedirect(route('admin.categories', absolute: false));
 
         $this->assertDatabaseHas('categories', [
             'name' => 'Núi',
+        ]);
+    }
+
+    public function test_admin_can_rename_category(): void
+    {
+        $category = Category::create(['name' => 'Danh mục cũ']);
+
+        $response = $this
+            ->actingAs(User::factory()->admin()->create())
+            ->patch(route('admin.categories.update', $category), [
+                'name' => 'Di sản',
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('admin.categories', absolute: false));
+
+        $this->assertDatabaseHas('categories', [
+            'id' => $category->id,
+            'name' => 'Di sản',
         ]);
     }
 
@@ -57,10 +86,10 @@ class CategoryManagementTest extends TestCase
 
         $response = $this
             ->actingAs($admin)
-            ->delete(route('categories.destroy', $category));
+            ->delete(route('admin.categories.destroy', $category));
 
         $response
-            ->assertRedirect(route('categories.index', absolute: false))
+            ->assertRedirect(route('admin.categories', absolute: false))
             ->assertSessionHas('error');
 
         $this->assertDatabaseHas('categories', [

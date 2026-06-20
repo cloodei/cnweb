@@ -3,7 +3,7 @@
         <div>
             <p class="font-mono text-xs font-semibold text-red-300">ADMIN / USERS</p>
             <h1 class="mt-2 font-display text-3xl font-semibold leading-tight text-white">Quản lý người dùng</h1>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-stone-400">Danh sách tài khoản và thao tác xóa tài khoản không phải admin.</p>
+            <p class="mt-2 max-w-2xl text-sm leading-6 text-stone-400">Xem và cập nhật tên, email, vai trò của tài khoản. Admin không xóa người dùng.</p>
         </div>
     </x-slot>
 
@@ -41,15 +41,7 @@
                                     @endif
                                 </td>
                                 <td class="px-5 py-4 text-right">
-                                    @if($user->role !== 'admin')
-                                        <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa tài khoản này vĩnh viễn?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-sm font-semibold text-red-300 hover:text-red-100">Xóa tài khoản</button>
-                                        </form>
-                                    @else
-                                        <span class="text-sm text-stone-600">Khóa thao tác</span>
-                                    @endif
+                                    <a href="{{ route('admin.users.edit', $user) }}" class="text-sm font-semibold text-red-300 hover:text-red-100">Chỉnh sửa</a>
                                 </td>
                             </tr>
                         @endforeach

@@ -40,7 +40,7 @@
             <a href="{{ route('admin.users') }}" class="rounded-lg border border-stone-800 bg-stone-900 p-6 hover:border-red-800">
                 <p class="font-mono text-xs font-semibold text-red-300">01 / USERS</p>
                 <h2 class="mt-4 text-xl font-semibold text-white">Quản lý người dùng</h2>
-                <p class="mt-3 text-sm leading-6 text-stone-400">Xem danh sách tài khoản và xóa tài khoản không phải admin khi cần.</p>
+                <p class="mt-3 text-sm leading-6 text-stone-400">Cập nhật tên, email và vai trò tài khoản mà không xóa dữ liệu người dùng.</p>
             </a>
 
             <a href="{{ route('admin.itineraries') }}" class="rounded-lg border border-stone-800 bg-stone-900 p-6 hover:border-red-800">
@@ -49,10 +49,10 @@
                 <p class="mt-3 text-sm leading-6 text-stone-400">Mở bản chia sẻ chỉ đọc hoặc gỡ lịch trình khỏi hệ thống.</p>
             </a>
 
-            <a href="{{ route('categories.index') }}" class="rounded-lg border border-stone-800 bg-stone-900 p-6 hover:border-red-800">
+            <a href="{{ route('admin.categories') }}" class="rounded-lg border border-stone-800 bg-stone-900 p-6 hover:border-red-800">
                 <p class="font-mono text-xs font-semibold text-red-300">03 / CATEGORIES</p>
                 <h2 class="mt-4 text-xl font-semibold text-white">Danh mục catalog</h2>
-                <p class="mt-3 text-sm leading-6 text-stone-400">Đi đến màn hình danh mục để tạo hoặc xóa nhóm địa điểm theo quy tắc hiện có.</p>
+                <p class="mt-3 text-sm leading-6 text-stone-400">Tạo, đổi tên và xóa nhóm địa điểm chưa được sử dụng.</p>
             </a>
         </section>
     </div>

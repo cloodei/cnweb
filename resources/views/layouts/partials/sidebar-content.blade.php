@@ -4,10 +4,7 @@
             <span class="grid h-11 w-11 place-items-center rounded-lg border border-stone-300 bg-white shadow-sm">
                 <x-application-logo class="h-7 w-7 text-emerald-900" />
             </span>
-            <span>
-                <span class="block font-display text-xl font-semibold leading-none">Travel Planner</span>
-                <span class="mt-1 block text-xs font-semibold text-stone-500">home project</span>
-            </span>
+            <span class="block font-display text-xl font-semibold leading-none">Travel Planner</span>
         </a>
     </div>
 

@@ -28,7 +28,7 @@ flowchart LR
 | `app/Http/Middleware/AdminMiddleware.php` | Rejects non-admin access to the admin route group. |
 | `app/Models` | Eloquent models and relationships for users, categories, locations, and itineraries. |
 | `database/migrations` | Database schema history. |
-| `database/seeders/DatabaseSeeder.php` | Local demo-user seed data. |
+| `database/seeders/DatabaseSeeder.php` | Deterministic demo data for users, categories, locations, itineraries, and scheduled stops. |
 | `resources/views` | Blade pages grouped by feature. |
 | `resources/js` and `resources/css` | Vite entry points for Alpine.js and Tailwind CSS. |
 | `tests` | Breeze scaffold tests plus focused travel-domain feature tests. |
@@ -65,7 +65,7 @@ Categories organize the shared destination catalog.
 - Views: `resources/views/categories/*`
 - Relationship: one category has many locations.
 
-Read access is available to signed-in users. Category creation and deletion are admin-only. Deletion is blocked when a category still has locations, because deleting a category at the database level cascades into locations and scheduled stops.
+Read access is available to signed-in users. Category creation, renaming, and deletion live in the dedicated admin console. Deletion is blocked when a category still has locations, because deleting a category at the database level cascades into locations and scheduled stops.
 
 ### Locations
 
@@ -107,7 +107,7 @@ Admin routes use `auth` and the custom `admin` middleware alias configured in `b
 - Middleware: `app/Http/Middleware/AdminMiddleware.php`
 - Views: `resources/views/admin/*`
 
-Admins enter a separate moderation console at `/admin`. They can view users, delete non-admin users, view itineraries, delete itineraries, and reach category write routes.
+Admins enter a separate moderation console at `/admin`. They can edit user names, emails, and roles without deleting accounts; create, rename, and safely delete unused categories; and view or delete itineraries.
 
 ## Data Model
 
@@ -172,12 +172,12 @@ Important schema behavior:
 | Public itinerary share | `GET /shared/itineraries/{itinerary}` | Public, read-only |
 | Dashboard | `GET /dashboard` | Signed in |
 | Categories | `GET /categories`, `GET /categories/{category}` | Signed in |
-| Category writes | `POST /categories`, `DELETE /categories/{category}` | Admin |
+| Category management | `/admin/categories/*` | Admin; create, rename, and delete unused categories |
 | Locations | `/locations/*` | Signed in; contributor or admin for edit and delete |
 | Itineraries | `/itineraries/*` | Signed in; controller restricts records to owner |
 | Itinerary stops | `POST /itineraries/{itinerary}/add-location`, `DELETE /itineraries/{itinerary}/remove-stop/{stop}` | Signed in itinerary owner |
 | PDF export | `GET /itineraries/{itinerary}/pdf` | Signed in itinerary owner |
-| Admin moderation | `/admin`, `/admin/users`, `/admin/itineraries` | Admin |
+| Admin moderation | `/admin`, `/admin/users`, `/admin/categories`, `/admin/itineraries` | Admin |
 
 Use `php artisan route:list --except-vendor` as the source of truth when routes change.
 
@@ -205,7 +205,7 @@ Use `php artisan route:list --except-vendor` as the source of truth when routes 
 
 1. The request enters the `auth` plus `admin` route group.
 2. `AdminMiddleware` checks `Auth::user()->isAdmin()`.
-3. `AdminController` renders the admin console, then lists or deletes users and itineraries from dedicated admin screens.
+3. `AdminController` renders the admin console, updates user information, and moderates itineraries; `CategoryController` handles the dedicated admin category screen.
 
 ## Frontend Notes
 
@@ -225,8 +225,8 @@ Treat these as active maintenance items when touching the related modules:
 1. **Group collaboration is not implemented.** Itineraries are owner-only and public sharing is read-only.
 2. **Public itinerary links are enumerable.** The share route uses the itinerary database ID without a token or revocation mechanism.
 3. **Authorization is still mostly manual.** Controllers enforce owner/admin checks directly. Policies would make future collaboration and moderation rules easier to test.
-4. **Domain tests are partial.** Category permissions, location ownership, and exact scheduled-stop deletion have coverage. PDF export, public share access, and admin moderation still need tests.
-5. **Admin moderation is basic.** Admins can list and delete users or itineraries, but there is no audit trail, soft delete, or recovery flow.
+4. **Domain tests are partial.** Category permissions, admin user editing, location ownership, and exact scheduled-stop deletion have coverage. PDF export, public share access, and itinerary moderation still need tests.
+5. **Admin moderation is basic.** Admins can edit users, manage categories, and remove itineraries, but there is no audit trail, soft delete, or recovery flow.
 
 ## Where To Extend
 

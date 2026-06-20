@@ -12,9 +12,9 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['"Atkinson Hyperlegible"', ...defaultTheme.fontFamily.sans],
-                display: ['Literata', ...defaultTheme.fontFamily.serif],
-                mono: ['"IBM Plex Mono"', ...defaultTheme.fontFamily.mono],
+                sans: ['"Be Vietnam Pro"', ...defaultTheme.fontFamily.sans],
+                display: ['Lora', ...defaultTheme.fontFamily.serif],
+                mono: ['"JetBrains Mono"', ...defaultTheme.fontFamily.mono],
             },
         },
     },

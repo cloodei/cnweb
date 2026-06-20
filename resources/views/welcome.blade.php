@@ -4,8 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Travel Planner</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=atkinson-hyperlegible:400,700|literata:600,700|ibm-plex-mono:500,600&display=swap" rel="stylesheet" />
+    @include('layouts.partials.fonts')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans">

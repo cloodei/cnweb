@@ -7,8 +7,7 @@
 
         <title>Admin - Travel Planner</title>
 
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=atkinson-hyperlegible:400,700|literata:600,700|ibm-plex-mono:500,600&display=swap" rel="stylesheet" />
+        @include('layouts.partials.fonts')
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
@@ -30,7 +29,7 @@
                         <span class="font-mono text-xs">00</span>
                         Tổng quan admin
                     </a>
-                    <a href="{{ route('admin.users') }}" class="{{ request()->routeIs('admin.users') ? 'bg-red-900 text-white' : 'text-stone-300 hover:bg-stone-900 hover:text-white' }} flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold">
+                    <a href="{{ route('admin.users') }}" class="{{ request()->routeIs('admin.users*') ? 'bg-red-900 text-white' : 'text-stone-300 hover:bg-stone-900 hover:text-white' }} flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold">
                         <span class="font-mono text-xs">01</span>
                         Người dùng
                     </a>
@@ -38,7 +37,7 @@
                         <span class="font-mono text-xs">02</span>
                         Kiểm duyệt lịch trình
                     </a>
-                    <a href="{{ route('categories.index') }}" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold text-stone-400 hover:bg-stone-900 hover:text-white">
+                    <a href="{{ route('admin.categories') }}" class="{{ request()->routeIs('admin.categories*') ? 'bg-red-900 text-white' : 'text-stone-300 hover:bg-stone-900 hover:text-white' }} flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold">
                         <span class="font-mono text-xs">03</span>
                         Quản lý danh mục
                     </a>
@@ -65,9 +64,10 @@
                     </a>
                     <a href="{{ route('dashboard') }}" class="rounded-lg border border-stone-700 px-3 py-2 text-sm font-semibold text-stone-200">User</a>
                 </div>
-                <nav class="mt-4 grid grid-cols-3 gap-2 text-center text-xs font-semibold">
+                <nav class="mt-4 grid grid-cols-2 gap-2 text-center text-xs font-semibold sm:grid-cols-4">
                     <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'bg-red-900 text-white' : 'bg-stone-900 text-stone-300' }} rounded-lg px-2 py-2">Tổng quan</a>
-                    <a href="{{ route('admin.users') }}" class="{{ request()->routeIs('admin.users') ? 'bg-red-900 text-white' : 'bg-stone-900 text-stone-300' }} rounded-lg px-2 py-2">Người dùng</a>
+                    <a href="{{ route('admin.users') }}" class="{{ request()->routeIs('admin.users*') ? 'bg-red-900 text-white' : 'bg-stone-900 text-stone-300' }} rounded-lg px-2 py-2">Người dùng</a>
+                    <a href="{{ route('admin.categories') }}" class="{{ request()->routeIs('admin.categories*') ? 'bg-red-900 text-white' : 'bg-stone-900 text-stone-300' }} rounded-lg px-2 py-2">Danh mục</a>
                     <a href="{{ route('admin.itineraries') }}" class="{{ request()->routeIs('admin.itineraries') ? 'bg-red-900 text-white' : 'bg-stone-900 text-stone-300' }} rounded-lg px-2 py-2">Lịch trình</a>
                 </nav>
             </div>
