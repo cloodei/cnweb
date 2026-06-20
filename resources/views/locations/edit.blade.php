@@ -45,6 +45,13 @@
                     <input type="file" name="image" id="imageInput" accept="image/*" class="field-file">
                     @error('image') <p class="mt-2 text-sm font-medium text-red-700">{{ $message }}</p> @enderror
 
+                    @if($location->image)
+                        <div class="mt-3 flex items-center gap-2">
+                            <input type="checkbox" name="remove_image" id="remove_image" value="1" class="h-4 w-4 rounded border-stone-300 text-emerald-600 focus:ring-emerald-500" {{ old('remove_image') ? 'checked' : '' }}>
+                            <label for="remove_image" class="text-sm font-medium text-stone-600">Xóa ảnh hiện tại</label>
+                        </div>
+                    @endif
+
                     <div class="mt-4 hidden" id="previewContainer">
                         <p class="mb-2 text-sm font-semibold text-stone-500">Ảnh mới</p>
                         <img id="imagePreview" src="" alt="Ảnh mới xem trước" class="h-40 w-full rounded-md border border-stone-200 object-cover shadow-sm sm:w-80">

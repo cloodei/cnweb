@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Location;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class LocationManagementTest extends TestCase
@@ -120,5 +121,42 @@ class LocationManagementTest extends TestCase
         $this->assertDatabaseMissing('locations', [
             'id' => $location->id,
         ]);
+    }
+
+    public function test_location_owner_can_remove_existing_image_during_update(): void
+    {
+        Storage::fake('public');
+
+        $user = User::factory()->create();
+        $category = Category::create(['name' => 'Biển']);
+        $location = Location::create([
+            'category_id' => $category->id,
+            'user_id' => $user->id,
+            'name' => 'Địa điểm có ảnh',
+            'description' => 'Mô tả',
+            'image' => 'locations/original.jpg',
+        ]);
+
+        Storage::disk('public')->put('locations/original.jpg', 'old-image');
+
+        $response = $this
+            ->actingAs($user)
+            ->put(route('locations.update', $location), [
+                'name' => 'Địa điểm có ảnh',
+                'category_id' => $category->id,
+                'description' => 'Mô tả',
+                'remove_image' => '1',
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('locations.index', absolute: false));
+
+        $this->assertDatabaseHas('locations', [
+            'id' => $location->id,
+            'image' => null,
+        ]);
+
+        Storage::disk('public')->assertMissing('locations/original.jpg');
     }
 }

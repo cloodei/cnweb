@@ -88,10 +88,12 @@ class LocationController extends Controller
             'description' => 'nullable|string',
             'address' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
+            'remove_image' => 'nullable|boolean',
         ]);
 
         $oldImagePath = $location->image;
         $newImagePath = null;
+        $removeImage = $request->boolean('remove_image');
 
         if ($request->hasFile('image')) {
             $newImagePath = $request->file('image')->store('locations', 'public');
@@ -101,7 +103,7 @@ class LocationController extends Controller
             $location->update([
                 ...$validated,
                 'address' => $request->exists('address') ? ($validated['address'] ?? null) : $location->address,
-                'image' => $newImagePath ?? $oldImagePath,
+                'image' => $newImagePath ?? ($removeImage ? null : $oldImagePath),
             ]);
         } catch (Throwable $exception) {
             if ($newImagePath) {
@@ -112,6 +114,10 @@ class LocationController extends Controller
         }
 
         if ($newImagePath && $oldImagePath) {
+            Storage::disk('public')->delete($oldImagePath);
+        }
+
+        if ($removeImage && ! $newImagePath && $oldImagePath) {
             Storage::disk('public')->delete($oldImagePath);
         }
 
