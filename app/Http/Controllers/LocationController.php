@@ -18,7 +18,12 @@ class LocationController extends Controller
         $query = Location::with('category')->latest();
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%'.$request->search.'%');
+            $search = $request->search;
+
+            $query->where(function ($locationQuery) use ($search) {
+                $locationQuery->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('address', 'like', '%'.$search.'%');
+            });
         }
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);

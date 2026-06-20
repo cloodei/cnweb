@@ -18,8 +18,8 @@
         <section class="surface-panel p-4 sm:p-5">
             <form action="{{ route('locations.index') }}" method="GET" class="grid gap-3 md:grid-cols-[1fr_16rem_auto]">
                 <div>
-                    <label for="search" class="sr-only">Tìm tên địa điểm</label>
-                    <input id="search" type="text" name="search" value="{{ request('search') }}" class="field-control mt-0" placeholder="Tìm tên địa điểm">
+                    <label for="search" class="sr-only">Tìm tên hoặc địa chỉ</label>
+                    <input id="search" type="text" name="search" value="{{ request('search') }}" class="field-control mt-0" placeholder="Tìm tên hoặc địa chỉ">
                 </div>
 
                 <div>

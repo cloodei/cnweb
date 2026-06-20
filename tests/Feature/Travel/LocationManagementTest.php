@@ -159,4 +159,32 @@ class LocationManagementTest extends TestCase
 
         Storage::disk('public')->assertMissing('locations/original.jpg');
     }
+
+    public function test_location_index_searches_by_address(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::create(['name' => 'Biển']);
+
+        Location::create([
+            'category_id' => $category->id,
+            'user_id' => $user->id,
+            'name' => 'Địa điểm A',
+            'address' => 'Phường Bãi Cháy, TP. Hạ Long',
+        ]);
+
+        Location::create([
+            'category_id' => $category->id,
+            'user_id' => $user->id,
+            'name' => 'Địa điểm B',
+            'address' => 'Đà Nẵng',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('locations.index', ['search' => 'Hạ Long']));
+
+        $response->assertOk();
+        $response->assertSee('Địa điểm A');
+        $response->assertDontSee('Địa điểm B');
+    }
 }
