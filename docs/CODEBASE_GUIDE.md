@@ -78,7 +78,7 @@ Locations are shared destination-catalog entries.
 
 Any signed-in user can create a location. A location stores its contributor in `user_id`. The contributor or an admin can edit or delete it. All signed-in users can browse, search, filter, and read location details.
 
-The location-detail view embeds Google Maps by address, with the location name as a fallback query.
+The location-detail view embeds Google Maps using the location name and address together when available, with the name as the fallback query when there is no address.
 
 ### Itineraries
 

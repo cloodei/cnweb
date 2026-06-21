@@ -64,7 +64,7 @@
                     height="100%"
                     frameborder="0"
                     style="border:0"
-                    src="https://maps.google.com/maps?q={{ urlencode($location->address ?? $location->name) }}&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                    src="https://maps.google.com/maps?q={{ urlencode($location->mapSearchQuery()) }}&t=&z=15&ie=UTF8&iwloc=&output=embed"
                     allowfullscreen>
                 </iframe>
             </div>

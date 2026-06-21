@@ -24,4 +24,9 @@ class Location extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function mapSearchQuery(): string
+    {
+        return trim($this->name.' '.($this->address ?? ''));
+    }
 }

@@ -187,4 +187,27 @@ class LocationManagementTest extends TestCase
         $response->assertSee('Địa điểm A');
         $response->assertDontSee('Địa điểm B');
     }
+
+    public function test_location_show_map_search_uses_name_and_address(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::create(['name' => 'Biển']);
+
+        $location = Location::create([
+            'category_id' => $category->id,
+            'user_id' => $user->id,
+            'name' => 'Địa điểm A',
+            'address' => 'Phường Bãi Cháy, TP. Hạ Long',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('locations.show', $location));
+
+        $response->assertOk();
+        $this->assertStringContainsString(
+            urlencode('Địa điểm A Phường Bãi Cháy, TP. Hạ Long'),
+            $response->getContent()
+        );
+    }
 }
