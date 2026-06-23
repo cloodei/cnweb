@@ -6,6 +6,7 @@ use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -13,6 +14,8 @@ class ProfileController extends Controller
 {
     /**
      * Display the user's profile form.
+     * Admin accounts are redirected to the admin dashboard —
+     * they manage users through the admin console, not this form.
      */
     public function edit(Request $request): View|RedirectResponse
     {
@@ -20,13 +23,17 @@ class ProfileController extends Controller
             return Redirect::route('admin.dashboard');
         }
 
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
+        $user           = $request->user();
+        $itineraryCount = $user->itineraries()->count();
+        $locationCount  = $user->locations()->count();
+
+        return view('profile.edit', compact('user', 'itineraryCount', 'locationCount'));
     }
 
     /**
      * Update the user's profile information.
+     * Clears email_verified_at when the email address changes so the new
+     * address must be re-verified (if verification is enabled in future).
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
@@ -42,11 +49,14 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return Redirect::route('profile.edit')
+            ->with('status', 'profile-updated');
     }
 
     /**
      * Delete the user's account.
+     * Requires the current password for confirmation.
+     * Cascades to owned itineraries (see schema delete behavior in CODEBASE_GUIDE.md).
      */
     public function destroy(Request $request): RedirectResponse
     {
@@ -56,9 +66,17 @@ class ProfileController extends Controller
 
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
+        ], [
+            'password.required'        => 'Vui lòng nhập mật khẩu để xác nhận.',
+            'password.current_password' => 'Mật khẩu không đúng.',
         ]);
 
         $user = $request->user();
+
+        Log::info('User account deleted.', [
+            'user_id' => $user->id,
+            'email'   => $user->email,
+        ]);
 
         Auth::logout();
 
