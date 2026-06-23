@@ -22,11 +22,13 @@
             </svg>
             Địa điểm
         </x-nav-link>
-        <x-nav-link :href="route('itineraries.index')" :active="request()->routeIs('itineraries.*')">
+        <x-nav-link :href="route('groups.index')" :active="request()->routeIs('groups.*') || request()->routeIs('group-invites.*')">
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4h10v16H7zM9 8h6M9 12h6M9 16h4" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 21a6 6 0 0 0-12 0" />
+                <circle cx="10" cy="8" r="4" stroke-width="2" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M22 21a5 5 0 0 0-5-5M17 4a3 3 0 0 1 0 6" />
             </svg>
-            Lịch trình
+            Nhóm
         </x-nav-link>
     </nav>
 

@@ -2,16 +2,15 @@
 
 ## Purpose
 
-Travel Planner is intended to become a shared planning space for trips. A group should be able to collect destinations, decide where to go, arrange a schedule, and keep the current plan visible to everyone involved.
+Travel Planner is a shared planning space for trips. A group can collect the trip plan, decide where to go, arrange a schedule, and keep the current plan visible to everyone involved.
 
-The existing codebase implements the first layer of that idea:
+The existing codebase implements:
 
 1. A shared catalog of destination information.
-2. A personal itinerary builder.
-3. Read-only public sharing for an itinerary.
-4. Basic moderation for administrators.
-
-It does not yet implement a true group workspace.
+2. Private group workspaces with owner, editor, and viewer roles.
+3. Group invitation links with expiry and use limits.
+4. Group itinerary planning.
+5. Basic moderation for administrators.
 
 ## Domain Language
 
@@ -21,9 +20,11 @@ Use these terms consistently in code and documentation:
 | --- | --- |
 | Category | Internal catalog metadata used by admins to group locations. It is not a primary user-facing browse surface. |
 | Location | A reusable destination-catalog entry with a name, description, address, and optional image. |
-| Itinerary | A trip plan with a title, dates, description, and an ordered-by-time list of scheduled locations. |
+| Group | A private trip-planning workspace with members and roles. |
+| Group member | A user who belongs to a group as owner, editor, or viewer. |
+| Group invite | A time-limited and use-limited link that lets an authenticated user join a group. |
+| Itinerary | A trip plan inside one group, with a title, dates, description, and an ordered-by-time list of scheduled locations. |
 | Scheduled stop | The relationship between an itinerary and a location. It carries the visit time and trip-specific note. |
-| Share link | A public, read-only itinerary page. It is not an invitation and does not grant edit access. |
 | Admin | A user with moderation access for categories, users, and itineraries. |
 
 ## Current Product Surface
@@ -32,45 +33,44 @@ Use these terms consistently in code and documentation:
 | --- | --- | --- |
 | Browse destinations | Implemented | Signed-in users can browse and search locations. Category browsing redirects back to destinations. |
 | Contribute destinations | Implemented | Any signed-in user can add a location. The contributor or an admin can edit or delete it. |
-| Plan a trip | Implemented | An itinerary belongs to exactly one user. |
-| Schedule stops | Implemented | An itinerary owner can attach locations with visit times and notes. |
-| Export a trip | Implemented | An itinerary owner can download a PDF. |
-| Share a trip | Implemented, limited | Anyone with `/shared/itineraries/{id}` can read the itinerary. |
+| Create groups | Implemented | A signed-in user can create a group and becomes its owner. |
+| Invite group members | Implemented | Owners can create editor or viewer invite links with selectable duration and max uses. |
+| Plan a trip | Implemented | An itinerary belongs to exactly one group. |
+| Schedule stops | Implemented | Group owners and editors can attach locations with visit times and notes. |
+| Export a trip | Implemented | Group members can download a PDF for itineraries they can view. |
 | Moderate content | Partially implemented | Admins can create, rename, and safely delete unused categories; edit user names, emails, and roles; and list/delete itineraries. Admins do not delete user accounts. There is no audit trail, soft delete, or recovery flow. |
-| Group membership | Not implemented | There are no group, participant, membership, or invitation tables. |
-| Collaborative editing | Not implemented | Only the itinerary owner can change an itinerary. |
+| Group membership | Implemented | Group membership uses owner, editor, and viewer roles. |
+| Collaborative editing | Partially implemented | Owners and editors can change itineraries and scheduled stops; viewers can read. |
 | Coordination tracking | Not implemented | There are no comments, votes, tasks, decisions, or activity records. |
 
-## Target Collaboration Model
+## Collaboration Model
 
-The smallest useful next step is itinerary-level collaboration. Keep `itineraries` as the trip workspace and add participants directly to each itinerary:
+Groups are persistent planning workspaces. A group can own multiple itineraries, and users access itineraries through their group membership.
 
-| Proposed concept | Responsibility |
+| Concept | Responsibility |
 | --- | --- |
-| `itinerary_user` membership | Connect users to a trip with roles such as owner, editor, and viewer. |
-| Itinerary invitation | Invite a user or email address to join a trip without exposing edit access through a public URL. |
-| Membership-aware authorization | Replace owner-only checks with policies that distinguish owner, editor, viewer, admin, and anonymous share-link access. |
+| Group membership | Connect users to a group with roles such as owner, editor, and viewer. |
+| Group invitation | Invite a user to join a group without exposing itinerary data through a public URL. |
+| Membership-aware authorization | Policies distinguish owner, editor, viewer, admin moderation, and guests. |
 | Activity record | Capture important changes when the group needs traceability. |
-
-Add a separate reusable `groups` table only when the product needs a stable group that owns multiple trips. Do not introduce that extra abstraction merely to enable several people to edit one itinerary.
 
 ## Product Rules
 
 - Locations are shared catalog content, not private itinerary data.
 - Categories are admin/internal catalog metadata and should not be surfaced as required user-facing destination context.
 - A scheduled stop is trip-specific. Its visit time and note belong on the itinerary-location relation.
-- A public share URL is read-only.
-- Edit access must come from authenticated membership or admin status, never from possession of a public share URL.
+- Itineraries belong to groups, not directly to one user's private workspace.
+- View and edit access must come from authenticated group membership.
+- Group invite links join users to groups. They are not public itinerary pages.
 - Admin capabilities are moderation tools. They are not a substitute for group ownership or collaboration roles.
-- If sensitive itinerary data is added, replace predictable public IDs with revocable share tokens or signed URLs.
+- Admin moderation does not make an admin a group owner.
 
 ## Out Of Scope Today
 
 These may be useful later, but they are not represented in the current implementation:
 
-- Reusable travel groups.
-- Invitations and membership lifecycle.
 - Collaborative comments, voting, checklists, or expense splitting.
 - Notifications and real-time updates.
+- Private group-specific destination catalogs.
 - Geospatial search or route optimization.
 - API clients or a mobile application.

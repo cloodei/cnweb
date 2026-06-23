@@ -35,13 +35,13 @@
             <section class="grid min-h-[calc(100vh-8rem)] items-center gap-10 lg:grid-cols-[1fr_0.86fr]">
                 <div class="max-w-2xl">
                     <p class="mb-5 inline-flex rounded-full border border-stone-300 bg-white px-3 py-1 text-sm font-semibold text-stone-700 shadow-sm">
-                        Dự án lập lịch trình du lịch cá nhân
+                        Không gian lập lịch trình du lịch theo nhóm
                     </p>
                     <h1 class="font-display text-5xl font-semibold leading-[1.04] text-stone-950 sm:text-6xl">
-                        Ghi lại địa điểm, xếp lịch trình, rồi chia sẻ bản đọc.
+                        Tạo nhóm, mời thành viên, rồi cùng xếp lịch trình.
                     </h1>
                     <p class="mt-6 max-w-xl text-lg leading-8 text-stone-600">
-                        Một ứng dụng Laravel nhỏ gọn cho kho địa điểm dùng chung, lịch trình thuộc từng người dùng, xuất PDF và link chia sẻ chỉ đọc.
+                        Một ứng dụng Laravel cho kho địa điểm dùng chung, nhóm riêng tư, lịch trình theo vai trò, link mời có thời hạn và xuất PDF.
                     </p>
 
                     <div class="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -66,14 +66,14 @@
                                 <x-icon name="calendar" class="h-4 w-4 text-emerald-800" />
                                 Lịch trình
                             </dt>
-                            <dd class="mt-1 font-display text-2xl font-semibold text-stone-950">Cá nhân</dd>
+                            <dd class="mt-1 font-display text-2xl font-semibold text-stone-950">Theo nhóm</dd>
                         </div>
                         <div class="surface-panel p-4">
                             <dt class="flex items-center gap-2 text-sm font-semibold text-stone-500">
-                                <x-icon name="lock" class="h-4 w-4 text-amber-800" />
-                                Chia sẻ
+                                <x-icon name="mail" class="h-4 w-4 text-amber-800" />
+                                Link mời
                             </dt>
-                            <dd class="mt-1 font-display text-2xl font-semibold text-stone-950">Chỉ đọc</dd>
+                            <dd class="mt-1 font-display text-2xl font-semibold text-stone-950">Có hạn</dd>
                         </div>
                     </dl>
                 </div>
@@ -89,7 +89,7 @@
                     <div class="surface-panel absolute -bottom-6 left-6 max-w-xs p-5">
                         <p class="text-sm font-semibold text-stone-500">Mục tiêu hiện tại</p>
                         <p class="mt-2 text-sm leading-6 text-stone-700">
-                            Trình bày rõ phần đã làm được: địa điểm, lịch trình cá nhân, PDF, chia sẻ chỉ đọc và moderation cơ bản.
+                            Điều phối chuyến đi trong nhóm: owner quản lý lời mời, editor chỉnh lịch trình, viewer theo dõi kế hoạch.
                         </p>
                     </div>
                 </div>

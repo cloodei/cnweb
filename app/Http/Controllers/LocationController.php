@@ -26,7 +26,7 @@ class LocationController extends Controller
             });
         }
 
-        $locations = $query->paginate(5)->withQueryString();
+        $locations = $query->paginate(6)->withQueryString();
 
         return view('locations.index', compact('locations'));
     }

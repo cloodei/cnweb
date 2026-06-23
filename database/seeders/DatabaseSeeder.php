@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\Group;
 use App\Models\Itinerary;
 use App\Models\Location;
 use App\Models\User;
@@ -193,8 +194,62 @@ class DatabaseSeeder extends Seeder
             return [$locationData['name'] => $location];
         });
 
+        $groupRecords = [
+            [
+                'key' => 'hanoi-weekend',
+                'name' => 'Nhóm Hà Nội cuối tuần',
+                'owner' => 'usera@gmail.com',
+                'description' => 'Nhóm nhỏ chuẩn bị lịch trình cuối tuần ở Hà Nội và Ninh Bình.',
+                'members' => [
+                    'usera@gmail.com' => Group::ROLE_OWNER,
+                    'userb@gmail.com' => Group::ROLE_EDITOR,
+                    'chau@gmail.com' => Group::ROLE_VIEWER,
+                ],
+            ],
+            [
+                'key' => 'central-heritage',
+                'name' => 'Nhóm di sản miền Trung',
+                'owner' => 'chau@gmail.com',
+                'description' => 'Theo dõi các chặng Huế, Hội An, Đà Nẵng và Phong Nha.',
+                'members' => [
+                    'chau@gmail.com' => Group::ROLE_OWNER,
+                    'userb@gmail.com' => Group::ROLE_EDITOR,
+                    'huy@gmail.com' => Group::ROLE_VIEWER,
+                ],
+            ],
+            [
+                'key' => 'mountain-clouds',
+                'name' => 'Nhóm săn mây vùng cao',
+                'owner' => 'huy@gmail.com',
+                'description' => 'Chuẩn bị lịch trình vùng núi, thời tiết và các điểm dừng ngoài trời.',
+                'members' => [
+                    'huy@gmail.com' => Group::ROLE_OWNER,
+                    'usera@gmail.com' => Group::ROLE_EDITOR,
+                ],
+            ],
+        ];
+
+        $groups = collect($groupRecords)->mapWithKeys(function (array $groupData) use ($users) {
+            $group = Group::updateOrCreate(
+                ['name' => $groupData['name']],
+                [
+                    'owner_id' => $users[$groupData['owner']]->id,
+                    'description' => $groupData['description'],
+                ],
+            );
+
+            $members = collect($groupData['members'])->mapWithKeys(function (string $role, string $email) use ($users) {
+                return [$users[$email]->id => ['role' => $role]];
+            })->all();
+
+            $group->members()->sync($members);
+
+            return [$groupData['key'] => $group];
+        });
+
         $itineraryRecords = [
             [
+                'group' => 'hanoi-weekend',
                 'owner' => 'usera@gmail.com',
                 'title' => 'Hà Nội cuối tuần',
                 'description' => 'Hai ngày khám phá khu trung tâm, di sản và ẩm thực Hà Nội.',
@@ -207,6 +262,7 @@ class DatabaseSeeder extends Seeder
                 ],
             ],
             [
+                'group' => 'hanoi-weekend',
                 'owner' => 'usera@gmail.com',
                 'title' => 'Hạ Long ngắn ngày',
                 'description' => 'Một chuyến nghỉ ngắn với lịch trình gọn quanh vịnh.',
@@ -217,6 +273,7 @@ class DatabaseSeeder extends Seeder
                 ],
             ],
             [
+                'group' => 'central-heritage',
                 'owner' => 'userb@gmail.com',
                 'title' => 'Đà Nẵng - Hội An',
                 'description' => 'Kết hợp biển, phố cổ và một buổi tối thư thả.',
@@ -228,6 +285,7 @@ class DatabaseSeeder extends Seeder
                 ],
             ],
             [
+                'group' => 'central-heritage',
                 'owner' => 'chau@gmail.com',
                 'title' => 'Di sản miền Trung',
                 'description' => 'Hành trình chậm qua Huế, Hội An và Phong Nha.',
@@ -240,6 +298,7 @@ class DatabaseSeeder extends Seeder
                 ],
             ],
             [
+                'group' => 'mountain-clouds',
                 'owner' => 'huy@gmail.com',
                 'title' => 'Săn mây Sa Pa',
                 'description' => 'Lịch trình vùng cao tập trung vào cảnh quan và trải nghiệm ngoài trời.',
@@ -254,10 +313,11 @@ class DatabaseSeeder extends Seeder
         foreach ($itineraryRecords as $itineraryData) {
             $itinerary = Itinerary::updateOrCreate(
                 [
-                    'user_id' => $users[$itineraryData['owner']]->id,
+                    'group_id' => $groups[$itineraryData['group']]->id,
                     'title' => $itineraryData['title'],
                 ],
                 [
+                    'user_id' => $users[$itineraryData['owner']]->id,
                     'description' => $itineraryData['description'],
                     'start_date' => $itineraryData['start_date'],
                     'end_date' => $itineraryData['end_date'],

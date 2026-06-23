@@ -2,13 +2,14 @@
 
 ## Architecture At A Glance
 
-This is a server-rendered Laravel application. Browser requests enter through `routes/web.php`, pass through Laravel middleware, run controller actions, query Eloquent models, and render Blade views. Vite builds Tailwind CSS and Alpine.js assets. There is no JSON API layer.
+This is a server-rendered Laravel application. Browser requests enter through `routes/web.php`, pass through Laravel middleware and policies, run controller actions, query Eloquent models, and render Blade views. Vite builds Tailwind CSS and Alpine.js assets. There is no JSON API layer.
 
 ```mermaid
 flowchart LR
     Browser --> Routes["routes/web.php"]
     Routes --> Middleware["auth, admin"]
-    Middleware --> Controllers["app/Http/Controllers"]
+    Middleware --> Policies["GroupPolicy, ItineraryPolicy"]
+    Policies --> Controllers["app/Http/Controllers"]
     Controllers --> Models["app/Models"]
     Models --> Database[(Database)]
     Controllers --> Views["resources/views"]
@@ -21,14 +22,14 @@ flowchart LR
 
 | Path | Responsibility |
 | --- | --- |
-| `routes/web.php` | Travel-planner routes, dashboard route, middleware grouping, and the public share route. |
+| `routes/web.php` | Travel-planner routes, dashboard route, group routes, invite routes, nested itinerary routes, and admin route group. |
 | `routes/auth.php` | Laravel Breeze authentication routes. |
 | `bootstrap/app.php` | Laravel bootstrapping and the `admin` middleware alias. |
-| `app/Http/Controllers` | Request handling for categories, locations, itineraries, administration, and profiles. |
-| `app/Http/Middleware/AdminMiddleware.php` | Rejects non-admin access to the admin route group. |
-| `app/Models` | Eloquent models and relationships for users, categories, locations, and itineraries. |
+| `app/Http/Controllers` | Request handling for categories, locations, groups, invites, itineraries, administration, and profiles. |
+| `app/Policies` | Group and itinerary authorization rules. |
+| `app/Models` | Eloquent models and relationships for users, groups, invites, categories, locations, and itineraries. |
 | `database/migrations` | Database schema history. |
-| `database/seeders/DatabaseSeeder.php` | Deterministic demo data for users, categories, locations, itineraries, and scheduled stops. |
+| `database/seeders/DatabaseSeeder.php` | Deterministic demo data for users, groups, memberships, categories, locations, itineraries, and scheduled stops. |
 | `resources/views` | Blade pages grouped by feature. |
 | `resources/js` and `resources/css` | Vite entry points for Alpine.js and Tailwind CSS. |
 | `tests` | Breeze scaffold tests plus focused travel-domain feature tests. |
@@ -51,7 +52,8 @@ Email verification routes are provided by Breeze, but the dashboard does not req
 The dashboard is a signed-in landing page. It reports:
 
 - Total locations across the application.
-- Total itineraries owned by the current user.
+- Total groups the current user belongs to.
+- Total itineraries inside those groups.
 
 The database queries currently live directly in the dashboard route closure in `routes/web.php`.
 
@@ -77,26 +79,42 @@ Locations are shared destination-catalog entries.
 
 Any signed-in user can create a location. A location stores its contributor in `user_id`. The contributor or an admin can edit or delete it. All signed-in users can browse, search, and read location details.
 
-The location-detail view embeds Google Maps using the location name and address together when available, with the name as the fallback query when there is no address.
+### Groups
+
+Groups are private trip-planning workspaces.
+
+- Controller: `app/Http/Controllers/GroupController.php`
+- Model: `app/Models/Group.php`
+- Policy: `app/Policies/GroupPolicy.php`
+- Views: `resources/views/groups/*`
+- Membership table: `group_user`
+
+A signed-in user can create a group and becomes its owner. Group owners can edit group details and manage invite links. Editors can mutate itineraries. Viewers can read group itineraries.
+
+### Group Invites
+
+Group invites let authenticated users join a group through a time-limited and use-limited link.
+
+- Controller: `app/Http/Controllers/GroupInviteController.php`
+- Models: `GroupInvite`, `GroupInviteAcceptance`
+- Views: `resources/views/groups/invite.blade.php`
+- Routes: `GET/POST /group-invites/{token}` plus owner-managed nested invite routes under `/groups/{group}`
+
+Invite tokens are stored as hashes. A `GET` request renders a join screen only; accepting the invite is a `POST`. An invite can expire, be revoked, or run out of uses.
 
 ### Itineraries
 
-Itineraries are user-owned trip plans.
+Itineraries are group-owned trip plans.
 
 - Controller: `app/Http/Controllers/ItineraryController.php`
 - Model: `app/Models/Itinerary.php`
+- Policy: `app/Policies/ItineraryPolicy.php`
 - Views: `resources/views/itineraries/*`
 - PDF template: `resources/views/itineraries/pdf.blade.php`
 
-An itinerary owner can create, update, delete, and view a trip; attach catalog locations; remove attached locations; and download a PDF. Controller actions enforce ownership manually.
+Nested routes under `/groups/{group}/itineraries/*` ensure every itinerary is reached through a group. `itineraries.user_id` is creator attribution; it is not the access boundary. Group owners and editors can create, update, delete, add stops, and remove stops. Viewers can read and download PDF exports.
 
 An attached location is represented by the `itinerary_location` pivot table. Its `visit_time` and `note` are itinerary-specific.
-
-### Public Sharing
-
-`GET /shared/itineraries/{itinerary}` renders `resources/views/itineraries/shared.blade.php` without authentication.
-
-This route is deliberately read-only. It currently uses a predictable database ID and has no expiry, revocation token, or privacy mode.
 
 ### Administration
 
@@ -106,14 +124,19 @@ Admin routes use `auth` and the custom `admin` middleware alias configured in `b
 - Middleware: `app/Http/Middleware/AdminMiddleware.php`
 - Views: `resources/views/admin/*`
 
-Admins enter a separate moderation console at `/admin`. They can edit user names, emails, and roles without deleting accounts; create, rename, and safely delete unused categories; and view or delete itineraries.
+Admins enter a separate moderation console at `/admin`. They can edit user names, emails, and roles without deleting accounts; create, rename, and safely delete unused categories; and list/delete itineraries. Admins are not group owners by default.
 
 ## Data Model
 
 ```mermaid
 erDiagram
-    USERS ||--o{ ITINERARIES : owns
+    USERS ||--o{ GROUPS : owns
+    USERS }o--o{ GROUPS : joins
+    GROUPS ||--o{ ITINERARIES : owns
+    GROUPS ||--o{ GROUP_INVITES : issues
+    GROUP_INVITES ||--o{ GROUP_INVITE_ACCEPTANCES : records
     USERS o|--o{ LOCATIONS : contributes
+    USERS o|--o{ ITINERARIES : creates
     CATEGORIES ||--o{ LOCATIONS : groups
     ITINERARIES ||--o{ ITINERARY_LOCATION : schedules
     LOCATIONS ||--o{ ITINERARY_LOCATION : appears_in
@@ -125,9 +148,27 @@ erDiagram
         string password
         enum role
     }
-    CATEGORIES {
+    GROUPS {
         bigint id PK
+        bigint owner_id FK
         string name
+        text description
+    }
+    GROUP_USER {
+        bigint group_id FK
+        bigint user_id FK
+        string role
+    }
+    GROUP_INVITES {
+        bigint id PK
+        bigint group_id FK
+        bigint created_by FK
+        string token_hash
+        string role
+        timestamp expires_at
+        int max_uses
+        int uses_count
+        timestamp revoked_at
     }
     LOCATIONS {
         bigint id PK
@@ -140,6 +181,7 @@ erDiagram
     }
     ITINERARIES {
         bigint id PK
+        bigint group_id FK
         bigint user_id FK
         string title
         text description
@@ -157,48 +199,60 @@ erDiagram
 
 Important schema behavior:
 
+- Deleting a group cascades to its memberships, invites, itineraries, and scheduled stops.
+- Deleting an itinerary cascades to its scheduled-stop records.
 - Deleting a category cascades to its locations.
 - Deleting a location cascades to its scheduled-stop records.
-- Deleting a user cascades to their itineraries.
 - Deleting a location contributor sets `locations.user_id` to `null`.
-- The pivot table does not currently enforce uniqueness, so the same location can be attached to one itinerary more than once.
+- Deleting an itinerary creator sets `itineraries.user_id` to `null`.
+- The pivot table does not currently enforce itinerary/location uniqueness, so the same location can be attached to one itinerary more than once.
 
 ## Route And Access Map
 
 | Area | Main routes | Access |
 | --- | --- | --- |
 | Landing page | `GET /` | Public |
-| Public itinerary share | `GET /shared/itineraries/{itinerary}` | Public, read-only |
 | Dashboard | `GET /dashboard` | Signed in |
 | Categories | `GET /categories`, `GET /categories/{category}` | Signed in; redirects to locations |
 | Category management | `/admin/categories/*` | Admin; create, rename, and delete unused categories |
 | Locations | `/locations/*` | Signed in; contributor or admin for edit and delete |
-| Itineraries | `/itineraries/*` | Signed in; controller restricts records to owner |
-| Itinerary stops | `POST /itineraries/{itinerary}/add-location`, `DELETE /itineraries/{itinerary}/remove-stop/{stop}` | Signed in itinerary owner |
-| PDF export | `GET /itineraries/{itinerary}/pdf` | Signed in itinerary owner |
+| Groups | `/groups/*` | Signed-in group members; owner for update/delete |
+| Group invites | `/groups/{group}/invites`, `/group-invites/{token}` | Group owner creates/revokes; authenticated users accept valid invites |
+| Itineraries | `/groups/{group}/itineraries/*` | Group member view; owner/editor mutate |
+| Itinerary stops | `POST /groups/{group}/itineraries/{itinerary}/add-location`, `DELETE /groups/{group}/itineraries/{itinerary}/remove-stop/{stop}` | Group owner/editor |
+| PDF export | `GET /groups/{group}/itineraries/{itinerary}/pdf` | Group member |
 | Admin moderation | `/admin`, `/admin/users`, `/admin/categories`, `/admin/itineraries` | Admin |
 
 Use `php artisan route:list --except-vendor` as the source of truth when routes change.
 
 ## Request Flows
 
-### Add A Destination
+### Create A Group
 
-1. A signed-in user opens `/locations/create`.
-2. `LocationController::create()` renders the destination form without category controls.
-3. `LocationController::store()` validates required fields and the optional image.
-4. The image is stored on the `public` disk.
-5. A location record is created with the current user's ID and an internal default category when needed.
-6. The browser returns to `/locations`.
+1. A signed-in user opens `/groups/create`.
+2. `GroupController::store()` validates the group name and optional description.
+3. The group is created with the current user as owner.
+4. The current user is attached as an owner membership.
+5. The browser redirects to the group workspace.
 
-### Build An Itinerary
+### Invite A Member
 
-1. A signed-in user creates an itinerary at `/itineraries/create`.
-2. `ItineraryController::store()` creates the itinerary through the authenticated user's relation.
-3. The owner opens `/itineraries/{itinerary}`.
-4. `ItineraryController::show()` loads scheduled stops and all catalog locations.
-5. The owner attaches locations with an optional visit time and note.
-6. The itinerary can be exported to PDF or exposed through the public read-only share URL.
+1. A group owner opens a group workspace.
+2. `GroupInviteController::store()` creates a hashed invite token with selected role, expiry, and max-use count.
+3. The raw invite URL is shown once through flash session data.
+4. The invited signed-in user opens `/group-invites/{token}`.
+5. The join screen displays invite status.
+6. The user accepts with `POST /group-invites/{token}`.
+7. The app records membership, increments invite usage, stores an acceptance record, and redirects to the group.
+
+### Build A Group Itinerary
+
+1. A group owner or editor opens `/groups/{group}`.
+2. They create an itinerary under `/groups/{group}/itineraries/create`.
+3. `ItineraryController::store()` creates the itinerary through the group relation and stores the current user as creator.
+4. The group member opens `/groups/{group}/itineraries/{itinerary}`.
+5. Owners and editors attach locations with optional visit time and note.
+6. Any group member can export a PDF.
 
 ### Moderate Content
 
@@ -221,17 +275,19 @@ Use `php artisan route:list --except-vendor` as the source of truth when routes 
 
 Treat these as active maintenance items when touching the related modules:
 
-1. **Group collaboration is not implemented.** Itineraries are owner-only and public sharing is read-only.
-2. **Public itinerary links are enumerable.** The share route uses the itinerary database ID without a token or revocation mechanism.
-3. **Authorization is still mostly manual.** Controllers enforce owner/admin checks directly. Policies would make future collaboration and moderation rules easier to test.
-4. **Domain tests are partial.** Category permissions, admin user editing, location ownership, and exact scheduled-stop deletion have coverage. PDF export, public share access, and itinerary moderation still need tests.
+1. **Private group destination catalogs are not implemented.** Locations are still shared catalog content across signed-in users.
+2. **Invitation lifecycle is basic.** Invite links can expire, run out of uses, or be revoked, but there is no email delivery, notification, or member removal UI yet.
+3. **Authorization is policy-backed for groups and itineraries but still manual elsewhere.** Location and admin flows still enforce access mostly in controllers.
+4. **Domain tests are partial.** Group access, invites, category permissions, admin user editing, location ownership, and exact scheduled-stop deletion have coverage. PDF export and admin moderation still need tests.
 5. **Admin moderation is basic.** Admins can edit users, manage categories, and remove itineraries, but there is no audit trail, soft delete, or recovery flow.
 
 ## Where To Extend
 
 | Change | Primary files |
 | --- | --- |
-| Add collaboration | New membership migration and model, itinerary policies, `ItineraryController`, itinerary views |
+| Add private group destinations | Group/location migration, group destination relationships, group policy updates, group views, feature tests |
+| Change group roles | `Group`, `GroupPolicy`, `ItineraryPolicy`, group views, invite validation, feature tests |
+| Change invite behavior | `GroupInviteController`, `GroupInvite`, invite migrations/views, feature tests |
 | Add destination fields | Location migration, `Location` model, `LocationController`, location Blade views, feature tests |
 | Change authorization | Prefer policies plus feature tests; keep route middleware in `routes/web.php` clear |
 | Change categories | `CategoryController`, admin category view, redirect behavior, cascade behavior tests |

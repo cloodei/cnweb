@@ -3,6 +3,7 @@
 namespace Tests\Feature\Travel;
 
 use App\Models\Category;
+use App\Models\Group;
 use App\Models\Itinerary;
 use App\Models\Location;
 use App\Models\User;
@@ -17,6 +18,11 @@ class ItineraryStopsTest extends TestCase
     public function test_removing_a_stop_deletes_only_that_scheduled_stop(): void
     {
         $user = User::factory()->create();
+        $group = Group::create([
+            'owner_id' => $user->id,
+            'name' => 'Nhóm Hạ Long',
+        ]);
+        $group->members()->attach($user->id, ['role' => Group::ROLE_OWNER]);
         $category = Category::create(['name' => 'Biển']);
         $location = Location::create([
             'category_id' => $category->id,
@@ -24,6 +30,7 @@ class ItineraryStopsTest extends TestCase
             'name' => 'Vịnh Hạ Long',
         ]);
         $itinerary = Itinerary::create([
+            'group_id' => $group->id,
             'user_id' => $user->id,
             'title' => 'Chuyến đi Hạ Long',
             'start_date' => '2026-06-10',
@@ -45,7 +52,8 @@ class ItineraryStopsTest extends TestCase
 
         $response = $this
             ->actingAs($user)
-            ->delete(route('itineraries.remove-stop', [
+            ->delete(route('groups.itineraries.remove-stop', [
+                'group' => $group,
                 'itinerary' => $itinerary,
                 'stop' => $stopId,
             ]));
@@ -66,6 +74,11 @@ class ItineraryStopsTest extends TestCase
     {
         $owner = User::factory()->create();
         $otherUser = User::factory()->create();
+        $group = Group::create([
+            'owner_id' => $owner->id,
+            'name' => 'Nhóm Hạ Long',
+        ]);
+        $group->members()->attach($owner->id, ['role' => Group::ROLE_OWNER]);
         $category = Category::create(['name' => 'Biển']);
         $location = Location::create([
             'category_id' => $category->id,
@@ -73,6 +86,7 @@ class ItineraryStopsTest extends TestCase
             'name' => 'Vịnh Hạ Long',
         ]);
         $itinerary = Itinerary::create([
+            'group_id' => $group->id,
             'user_id' => $owner->id,
             'title' => 'Chuyến đi Hạ Long',
             'start_date' => '2026-06-10',
@@ -85,7 +99,8 @@ class ItineraryStopsTest extends TestCase
 
         $response = $this
             ->actingAs($otherUser)
-            ->delete(route('itineraries.remove-stop', [
+            ->delete(route('groups.itineraries.remove-stop', [
+                'group' => $group,
                 'itinerary' => $itinerary,
                 'stop' => $stopId,
             ]));

@@ -19,7 +19,8 @@
     <div class="header">
         <h1 class="title">{{ $itinerary->title }}</h1>
         <p class="meta">Khởi hành: {{ date('d/m/Y', strtotime($itinerary->start_date)) }} - Kết thúc: {{ date('d/m/Y', strtotime($itinerary->end_date)) }}</p>
-        <p>Người lập: {{ Auth::user()->name }}</p>
+        <p>Nhóm: {{ $group->name }}</p>
+        <p>Người xuất: {{ Auth::user()->name }}</p>
     </div>
 
     @if($itinerary->description)

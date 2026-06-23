@@ -47,6 +47,11 @@
             <path d="M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1" />
             @break
 
+        @case('mail')
+            <rect x="3" y="5" width="18" height="14" rx="2" />
+            <path d="m3 7 9 6 9-6" />
+            @break
+
         @case('lock')
             <rect x="4" y="11" width="16" height="10" rx="2" />
             <path d="M8 11V7a4 4 0 0 1 8 0v4" />
@@ -108,6 +113,13 @@
         @case('user')
             <circle cx="12" cy="8" r="4" />
             <path d="M4 21a8 8 0 0 1 16 0" />
+            @break
+
+        @case('users')
+            <path d="M16 21a6 6 0 0 0-12 0" />
+            <circle cx="10" cy="8" r="4" />
+            <path d="M22 21a5 5 0 0 0-5-5" />
+            <path d="M17 4a3 3 0 0 1 0 6" />
             @break
 
         @case('x')

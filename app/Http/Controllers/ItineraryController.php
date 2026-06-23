@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Group;
 use App\Models\Itinerary;
 use App\Models\Location;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -9,24 +10,28 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class ItineraryController extends Controller
 {
-    public function index(): View
+    public function index(): RedirectResponse
     {
-        $itineraries = Auth::user()->itineraries()->latest()->get();
-        return view('itineraries.index', compact('itineraries'));
+        return redirect()->route('groups.index');
     }
 
-    public function create(): View
+    public function create(Group $group): View
     {
-        return view('itineraries.create');
+        Gate::authorize('createItinerary', $group);
+
+        return view('itineraries.create', compact('group'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, Group $group): RedirectResponse
     {
+        Gate::authorize('createItinerary', $group);
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -36,32 +41,44 @@ class ItineraryController extends Controller
             'end_date.after_or_equal' => 'Ngày kết thúc không được nhỏ hơn ngày bắt đầu.',
         ]);
 
-        Auth::user()->itineraries()->create($validated);
-        return redirect()->route('itineraries.index')->with('success', 'Đã tạo lịch trình mới!');
+        $itinerary = $group->itineraries()->create([
+            ...$validated,
+            'user_id' => Auth::id(),
+        ]);
+
+        return redirect()
+            ->route('groups.itineraries.show', [$group, $itinerary])
+            ->with('success', 'Đã tạo lịch trình mới!');
     }
 
-    public function destroy(Itinerary $itinerary): RedirectResponse
+    public function destroy(Group $group, Itinerary $itinerary): RedirectResponse
     {
-        $this->authorizeItineraryOwner($itinerary, 'Bạn không có quyền xóa lịch trình này.');
+        $this->assertItineraryInGroup($group, $itinerary);
+        Gate::authorize('delete', $itinerary);
 
-        $itinerary->delete($itinerary->id);
+        $itinerary->delete();
 
-        return redirect()->route('itineraries.index')->with('success', 'Đã xóa lịch trình!');
+        return redirect()
+            ->route('groups.show', $group)
+            ->with('success', 'Đã xóa lịch trình!');
     }
 
-    public function show(Itinerary $itinerary): View
+    public function show(Group $group, Itinerary $itinerary): View
     {
-        $this->authorizeItineraryOwner($itinerary, 'Bạn không có quyền xem lịch trình này.');
+        $this->assertItineraryInGroup($group, $itinerary);
+        Gate::authorize('view', $itinerary);
 
         $scheduledLocations = $itinerary->locations()->orderBy('pivot_visit_time', 'asc')->get();
         $allLocations = Location::orderBy('name', 'asc')->get();
+        $membershipRole = $group->roleFor(Auth::user());
 
-        return view('itineraries.show', compact('itinerary', 'scheduledLocations', 'allLocations'));
+        return view('itineraries.show', compact('group', 'itinerary', 'scheduledLocations', 'allLocations', 'membershipRole'));
     }
 
-    public function addLocation(Request $request, Itinerary $itinerary): RedirectResponse
+    public function addLocation(Request $request, Group $group, Itinerary $itinerary): RedirectResponse
     {
-        $this->authorizeItineraryOwner($itinerary);
+        $this->assertItineraryInGroup($group, $itinerary);
+        Gate::authorize('manageStops', $itinerary);
 
         $validated = $request->validate([
             'location_id' => 'required|exists:locations,id',
@@ -74,12 +91,15 @@ class ItineraryController extends Controller
             'note' => $validated['note'] ?? null,
         ]);
 
-        return redirect()->route('itineraries.show', $itinerary)->with('success', 'Đã thêm địa điểm vào lộ trình chuyến đi!');
+        return redirect()
+            ->route('groups.itineraries.show', [$group, $itinerary])
+            ->with('success', 'Đã thêm địa điểm vào lộ trình chuyến đi!');
     }
 
-    public function removeStop(Itinerary $itinerary, int $stop): RedirectResponse
+    public function removeStop(Group $group, Itinerary $itinerary, int $stop): RedirectResponse
     {
-        $this->authorizeItineraryOwner($itinerary);
+        $this->assertItineraryInGroup($group, $itinerary);
+        Gate::authorize('manageStops', $itinerary);
 
         $deleted = DB::table('itinerary_location')
             ->where('id', $stop)
@@ -93,28 +113,31 @@ class ItineraryController extends Controller
         return redirect()->back()->with('success', 'Đã gỡ địa điểm khỏi lộ trình!');
     }
 
-    public function downloadPdf(Itinerary $itinerary)
+    public function downloadPdf(Group $group, Itinerary $itinerary)
     {
-        $this->authorizeItineraryOwner($itinerary);
+        $this->assertItineraryInGroup($group, $itinerary);
+        Gate::authorize('downloadPdf', $itinerary);
 
         $scheduledLocations = $itinerary->locations()->orderBy('pivot_visit_time', 'asc')->get();
 
-        $pdf = Pdf::loadView('itineraries.pdf', compact('itinerary', 'scheduledLocations'));
+        $pdf = Pdf::loadView('itineraries.pdf', compact('group', 'itinerary', 'scheduledLocations'));
         $fileName = 'Lich-trinh-'.Str::slug($itinerary->title).'.pdf';
 
         return $pdf->download($fileName);
     }
 
-    public function edit(Itinerary $itinerary): View
+    public function edit(Group $group, Itinerary $itinerary): View
     {
-        $this->authorizeItineraryOwner($itinerary, 'Bạn không có quyền sửa lịch trình này.');
+        $this->assertItineraryInGroup($group, $itinerary);
+        Gate::authorize('update', $itinerary);
 
-        return view('itineraries.edit', compact('itinerary'));
+        return view('itineraries.edit', compact('group', 'itinerary'));
     }
 
-    public function update(Request $request, Itinerary $itinerary): RedirectResponse
+    public function update(Request $request, Group $group, Itinerary $itinerary): RedirectResponse
     {
-        $this->authorizeItineraryOwner($itinerary);
+        $this->assertItineraryInGroup($group, $itinerary);
+        Gate::authorize('update', $itinerary);
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -127,20 +150,13 @@ class ItineraryController extends Controller
 
         $itinerary->update($validated);
 
-        return redirect()->route('itineraries.show', $itinerary)->with('success', 'Đã cập nhật thông tin chuyến đi!');
+        return redirect()
+            ->route('groups.itineraries.show', [$group, $itinerary])
+            ->with('success', 'Đã cập nhật thông tin chuyến đi!');
     }
 
-    public function shared(Itinerary $itinerary): View
+    private function assertItineraryInGroup(Group $group, Itinerary $itinerary): void
     {
-        $scheduledLocations = $itinerary->locations()->orderBy('pivot_visit_time', 'asc')->get();
-
-        return view('itineraries.shared', compact('itinerary', 'scheduledLocations'));
-    }
-
-    private function authorizeItineraryOwner(Itinerary $itinerary, ?string $message = null): void
-    {
-        if ($itinerary->user_id !== Auth::id()) {
-            abort(403, $message ?? 'Bạn không có quyền thao tác với lịch trình này.');
-        }
+        abort_unless($itinerary->group_id === $group->id, 404);
     }
 }

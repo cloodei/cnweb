@@ -2,9 +2,9 @@
 
 ## Mission
 
-This repository is a Laravel travel-planning application. Its intended direction is collaborative trip planning for groups. Its implemented baseline is narrower: a shared destination catalog, user-owned itineraries, public read-only share links, PDF export, and basic admin moderation.
+This repository is a Laravel travel-planning application. Its implemented baseline is now group-based trip planning: a shared destination catalog, private group workspaces, group-owned itineraries, invite links, PDF export, and basic admin moderation.
 
-Do not describe or build on group collaboration as if it already exists. Read `docs/PRODUCT.md` before adding collaboration features.
+Read `docs/PRODUCT.md` before changing collaboration, invite, or itinerary access behavior.
 
 ## Read First
 
@@ -22,46 +22,49 @@ Do not describe or build on group collaboration as if it already exists. Read `d
 | Dashboard | `routes/web.php`, `resources/views/dashboard.blade.php` | Signed-in landing page |
 | Categories | `CategoryController`, `Category`, admin category view | Internal catalog metadata; regular category pages redirect to locations; admin create/delete; deletion blocked while locations exist |
 | Locations | `LocationController`, `Location`, location views | Shared catalog; contributor or admin edit/delete |
-| Itineraries | `ItineraryController`, `Itinerary`, itinerary views | Current owner-only workspace |
+| Groups | `GroupController`, `Group`, group views | Private workspace; owner manages group settings and invite links |
+| Group invites | `GroupInviteController`, `GroupInvite`, `GroupInviteAcceptance`, group invite views | Authenticated join links with expiry and max-use limits |
+| Itineraries | `ItineraryController`, `Itinerary`, itinerary views | Belongs to one group; owner/editor mutate, viewer reads |
 | Scheduled stops | `itinerary_location` migration, `Itinerary::locations()` | Pivot data stores visit time and note |
-| Public sharing | `ItineraryController::shared()`, `itineraries/shared.blade.php` | Anonymous read-only URL |
 | Admin moderation | `AdminController`, `AdminMiddleware`, admin views | `User::isAdmin()` / `role === 'admin'` |
 
 ## Product Invariants
 
 - A `Location` is shared catalog content.
-- An `Itinerary` is a trip plan.
+- A `Group` is the private planning workspace.
+- A `GroupInvite` grants authenticated group membership while valid. It is not a public itinerary page.
+- An `Itinerary` is a trip plan inside one group.
 - `itinerary_location` is the scheduled-stop relation; keep trip-specific time and note data there.
-- Current itinerary mutations require the itinerary owner.
-- Public share URLs are read-only. Never grant edit access from a public share URL.
+- Itinerary visibility and mutation are controlled by group membership.
+- Group owners manage invite links. Editors can mutate itineraries. Viewers can read.
 - Location mutation is limited to the contributor or an admin.
 - Category metadata is not part of the regular user-facing destination display. Category deletion is blocked by the controller while locations exist. The schema still cascades if a category is deleted at a lower level, so treat it as a high-impact operation.
-- Admin moderation is separate from future group membership.
+- Admin moderation is separate from group ownership and group membership.
 
-## Before Adding Collaboration
+## Collaboration Guidance
 
-Use itinerary-level membership as the first collaboration boundary unless requirements explicitly call for persistent groups shared across trips.
+Use groups as the collaboration boundary. Do not reintroduce public itinerary pages as a substitute for group membership.
 
 A collaboration change should normally include:
 
-1. A membership migration and model relationship.
-2. Policies for owner, editor, viewer, admin, and anonymous share access.
-3. Invitation handling if users need to join trips.
+1. Group or membership model changes when roles or lifecycle change.
+2. Policies for owner, editor, viewer, admin moderation, and guest invite access.
+3. Invitation handling when users need to join groups.
 4. Updated itinerary queries and Blade views.
 5. Feature tests for every role and access path.
 
-Do not overload `user_id`, the public share URL, or the admin role to simulate collaboration.
+Do not overload `itineraries.user_id`, the invite URL, or the admin role to simulate collaboration.
 
 ## Known Hazards
 
 Check these before modifying adjacent code:
 
-1. Public itinerary share URLs expose sequential itinerary IDs and cannot be revoked.
-2. Group collaboration is not implemented; itinerary changes are still owner-only.
-3. Authorization is still mostly manual in controllers. Prefer policies when expanding access rules.
+1. Group invite links are join grants. Treat duration, use limits, token storage, and revocation as security-sensitive.
+2. `itineraries.user_id` is creator attribution, not the access boundary.
+3. Authorization uses policies for groups and itineraries. Keep new access rules there.
 4. The base users migration owns `role`; the later role migration is intentionally a no-op compatibility migration.
 5. Category deletion is blocked in HTTP flows when locations exist, but direct database deletion can still cascade.
-6. Travel-domain feature tests are focused, not complete. PDF export, public share access, and admin moderation still need coverage.
+6. Travel-domain feature tests are focused, not complete. PDF export and admin moderation still need coverage.
 7. The default PHPUnit suite requires the PHP CLI `pdo_sqlite` extension.
 
 ## Change Guidance
@@ -72,7 +75,7 @@ Check these before modifying adjacent code:
 - Do not expose or commit `.env`, database files, generated assets, uploaded files, or local credentials.
 - Keep `README.md` and files under `docs/` aligned when behavior or setup changes.
 - Inspect cascade behavior before changing delete flows.
-- Treat share-link changes as security-sensitive.
+- Treat invite-link changes as security-sensitive.
 - Do not introduce an API layer unless the product needs a separate client.
 
 ## Commands

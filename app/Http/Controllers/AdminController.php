@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AdminUpdateUserRequest;
 use App\Models\Category;
+use App\Models\Group;
 use App\Models\Itinerary;
 use App\Models\Location;
 use App\Models\User;
@@ -16,6 +17,7 @@ class AdminController extends Controller
     {
         $totalUsers = User::count();
         $adminUsers = User::where('role', 'admin')->count();
+        $totalGroups = Group::count();
         $totalItineraries = Itinerary::count();
         $totalLocations = Location::count();
         $totalCategories = Category::count();
@@ -23,6 +25,7 @@ class AdminController extends Controller
         return view('admin.dashboard', compact(
             'totalUsers',
             'adminUsers',
+            'totalGroups',
             'totalItineraries',
             'totalLocations',
             'totalCategories',
@@ -65,7 +68,7 @@ class AdminController extends Controller
 
     public function manageItineraries(): View
     {
-        $itineraries = Itinerary::with('user')->latest()->get();
+        $itineraries = Itinerary::with(['user', 'group.owner'])->latest()->get();
 
         return view('admin.itineraries', compact('itineraries'));
     }

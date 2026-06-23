@@ -8,7 +8,7 @@
                 <div>
                     <p class="text-sm font-semibold text-emerald-900">Tổng quan</p>
                     <h1 class="section-title">Không gian lập lịch trình</h1>
-                    <p class="section-subtitle">Theo dõi kho địa điểm dùng chung và bắt đầu tạo lịch trình cá nhân của bạn.</p>
+                    <p class="section-subtitle">Theo dõi kho địa điểm dùng chung và điều phối lịch trình trong các nhóm của bạn.</p>
                 </div>
             </div>
         </div>
@@ -32,27 +32,27 @@
             <div class="stat-card">
                 <div class="flex items-start justify-between gap-4">
                     <div>
-                        <p class="text-sm font-semibold text-stone-500">Lịch trình của bạn</p>
-                        <p class="mt-3 font-display text-4xl font-semibold text-stone-950">{{ $totalItineraries }}</p>
+                        <p class="text-sm font-semibold text-stone-500">Nhóm của bạn</p>
+                        <p class="mt-3 font-display text-4xl font-semibold text-stone-950">{{ $totalGroups }}</p>
                     </div>
                     <span class="icon-tile icon-tile-emerald">
-                        <x-icon name="calendar" class="h-5 w-5" />
+                        <x-icon name="users" class="h-5 w-5" />
                     </span>
                 </div>
-                <p class="mt-3 text-sm text-stone-500">Kế hoạch chuyến đi thuộc tài khoản hiện tại.</p>
+                <p class="mt-3 text-sm text-stone-500">Không gian mà bạn đang tham gia với vai trò owner, editor hoặc viewer.</p>
             </div>
 
             <div class="stat-card">
                 <div class="flex items-start justify-between gap-4">
                     <div>
-                        <p class="text-sm font-semibold text-stone-500">Chia sẻ</p>
-                        <p class="mt-3 font-display text-4xl font-semibold text-stone-950">PDF</p>
+                        <p class="text-sm font-semibold text-stone-500">Lịch trình</p>
+                        <p class="mt-3 font-display text-4xl font-semibold text-stone-950">{{ $totalItineraries }}</p>
                     </div>
                     <span class="icon-tile icon-tile-amber">
-                        <x-icon name="link" class="h-5 w-5" />
+                        <x-icon name="mail" class="h-5 w-5" />
                     </span>
                 </div>
-                <p class="mt-3 text-sm text-stone-500">Xuất lịch trình hoặc gửi link xem chỉ đọc khi kế hoạch sẵn sàng.</p>
+                <p class="mt-3 text-sm text-stone-500">Các kế hoạch chuyến đi trong những nhóm bạn có quyền truy cập.</p>
             </div>
         </section>
 
@@ -63,18 +63,18 @@
                         <x-icon name="sparkles" class="h-4 w-4" />
                         Bắt đầu nhanh
                     </span>
-                    <h2 class="mt-3 card-title">Thêm địa điểm, rồi xếp chúng vào lịch trình.</h2>
+                    <h2 class="mt-3 card-title">Tạo nhóm, rồi xếp lịch trình bên trong nhóm.</h2>
                     <p class="mt-4 text-sm leading-6 text-stone-600">
-                        Kho địa điểm là nội dung dùng chung. Lịch trình là không gian riêng của bạn, nơi mỗi điểm dừng có thời gian ghé thăm và ghi chú riêng.
+                        Kho địa điểm vẫn là nội dung dùng chung. Nhóm là không gian riêng để mời thành viên, tạo lịch trình và quản lý từng điểm dừng theo thời gian.
                     </p>
                     <div class="mt-6 flex flex-col gap-3 sm:flex-row">
                         <a href="{{ route('locations.create') }}" class="action-primary">
                             <x-icon name="plus" class="h-4 w-4" />
                             Thêm địa điểm
                         </a>
-                        <a href="{{ route('itineraries.create') }}" class="action-secondary">
-                            <x-icon name="calendar" class="h-4 w-4" />
-                            Tạo lịch trình
+                        <a href="{{ route('groups.create') }}" class="action-secondary">
+                            <x-icon name="users" class="h-4 w-4" />
+                            Tạo nhóm
                         </a>
                     </div>
                 </div>
@@ -88,9 +88,9 @@
                     <div class="flex h-full min-h-60 flex-col justify-end">
                         <p class="inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 font-mono text-xs font-semibold text-stone-100 backdrop-blur">
                             <x-icon name="lock" class="h-3.5 w-3.5" />
-                            READ ONLY SHARE
+                            GROUP WORKSPACE
                         </p>
-                        <p class="mt-2 max-w-sm font-display text-2xl font-semibold leading-tight">Xuất PDF hoặc gửi link xem khi lịch trình đã sẵn sàng.</p>
+                        <p class="mt-2 max-w-sm font-display text-2xl font-semibold leading-tight">Mời thành viên vào nhóm rồi điều phối lịch trình theo vai trò.</p>
                     </div>
                 </div>
             </div>
@@ -106,23 +106,23 @@
                 </div>
                 <p class="mt-2 text-sm leading-6 text-stone-600">Tìm kiếm, xem và đóng góp thêm địa điểm cho kho chung.</p>
             </a>
-            <a href="{{ route('itineraries.index') }}" class="surface-panel p-5 hover:border-emerald-300 hover:bg-white">
+            <a href="{{ route('groups.index') }}" class="surface-panel p-5 hover:border-emerald-300 hover:bg-white">
                 <div class="flex items-center gap-3">
                     <span class="icon-tile icon-tile-emerald h-10 w-10">
-                        <x-icon name="route" class="h-4 w-4" />
+                        <x-icon name="users" class="h-4 w-4" />
                     </span>
-                    <h3 class="text-base font-semibold text-stone-950">Lịch trình</h3>
+                    <h3 class="text-base font-semibold text-stone-950">Nhóm</h3>
                 </div>
-                <p class="mt-2 text-sm leading-6 text-stone-600">Quản lý kế hoạch chuyến đi cá nhân, PDF và link chia sẻ chỉ đọc.</p>
+                <p class="mt-2 text-sm leading-6 text-stone-600">Vào không gian nhóm để tạo lịch trình, xem thành viên và quản lý link mời.</p>
             </a>
-            <a href="{{ route('itineraries.create') }}" class="surface-panel p-5 hover:border-emerald-300 hover:bg-white">
+            <a href="{{ route('groups.create') }}" class="surface-panel p-5 hover:border-emerald-300 hover:bg-white">
                 <div class="flex items-center gap-3">
                     <span class="icon-tile icon-tile-amber h-10 w-10">
-                        <x-icon name="file-text" class="h-4 w-4" />
+                        <x-icon name="mail" class="h-4 w-4" />
                     </span>
-                    <h3 class="text-base font-semibold text-stone-950">Bản chia sẻ</h3>
+                    <h3 class="text-base font-semibold text-stone-950">Mời cộng tác</h3>
                 </div>
-                <p class="mt-2 text-sm leading-6 text-stone-600">Chuẩn bị kế hoạch để xuất PDF hoặc gửi đường dẫn xem công khai.</p>
+                <p class="mt-2 text-sm leading-6 text-stone-600">Tạo nhóm mới rồi phát link mời có thời hạn và số lượt sử dụng.</p>
             </a>
         </section>
     </div>

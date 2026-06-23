@@ -91,7 +91,7 @@ npm run dev
 | User C | `chau@gmail.com` | `12345678` |
 | User D | `huy@gmail.com` | `12345678` |
 
-The suite also includes seven categories, fourteen Vietnamese destinations, five itineraries, and scheduled stops with visit times and notes. It is deterministic and safe to rerun for these records. These credentials are for local development only.
+The suite also includes seven categories, fourteen Vietnamese destinations, three travel groups, five group itineraries, and scheduled stops with visit times and notes. It is deterministic and safe to rerun for these records. These credentials are for local development only.
 
 ## Manual Smoke Test
 
@@ -99,12 +99,13 @@ The suite also includes seven categories, fourteen Vietnamese destinations, five
 2. Open `/dashboard` and confirm global location totals plus your itinerary total.
 3. Open `/locations`, create a destination with an image, search for it, and open its map detail page.
 4. Open `/categories` and confirm it redirects back to `/locations`.
-5. Open `/itineraries`, create a trip, add destination stops with visit times and notes, and remove one stop.
-6. Download the itinerary PDF.
-7. Copy the itinerary share URL and open it in a private browser window. Confirm it is readable but has no editing controls.
-8. With the seeded admin account, open `/admin/users`, edit a user's name/email/role, and confirm no delete-user action exists.
-9. Open `/admin/categories`, create or rename a category, and confirm categories containing locations cannot be deleted.
-10. Open `/admin/itineraries` and verify the seeded trips are available for moderation.
+5. Open `/groups`, create a group, and confirm you are listed as owner.
+6. From the group page, create a trip, add destination stops with visit times and notes, and remove one stop.
+7. Create an invite link with a short duration and max-use count. Open it as another signed-in user and confirm the user can join with the selected role.
+8. Download the itinerary PDF from a group itinerary page.
+9. With the seeded admin account, open `/admin/users`, edit a user's name/email/role, and confirm no delete-user action exists.
+10. Open `/admin/categories`, create or rename a category, and confirm categories containing locations cannot be deleted.
+11. Open `/admin/itineraries` and verify the seeded group trips are available for moderation.
 
 ## Verification Commands
 

@@ -5,7 +5,7 @@
                 <x-icon name="pencil" class="h-5 w-5" />
             </span>
             <div>
-                <a href="{{ route('itineraries.show', $itinerary) }}" class="link-quiet inline-flex items-center gap-1.5 text-sm">
+                <a href="{{ route('groups.itineraries.show', [$group, $itinerary]) }}" class="link-quiet inline-flex items-center gap-1.5 text-sm">
                     <x-icon name="arrow-left" class="h-4 w-4" />
                     Quay lại chi tiết
                 </a>
@@ -17,7 +17,7 @@
 
     <div class="narrow-shell">
         <section class="surface-panel p-6 sm:p-8">
-            <form action="{{ route('itineraries.update', $itinerary) }}" method="POST" class="space-y-6">
+            <form action="{{ route('groups.itineraries.update', [$group, $itinerary]) }}" method="POST" class="space-y-6">
                 @csrf
                 @method('PUT')
 
@@ -63,7 +63,7 @@
                         <x-icon name="pencil" class="h-4 w-4" />
                         Cập nhật
                     </button>
-                    <a href="{{ route('itineraries.show', $itinerary) }}" class="action-secondary">
+                    <a href="{{ route('groups.itineraries.show', [$group, $itinerary]) }}" class="action-secondary">
                         <x-icon name="x" class="h-4 w-4" />
                         Hủy
                     </a>

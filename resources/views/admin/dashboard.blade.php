@@ -13,7 +13,7 @@
     </x-slot>
 
     <div class="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
-        <section class="grid gap-4 md:grid-cols-5">
+        <section class="grid gap-4 md:grid-cols-6">
             <div class="rounded-lg border border-stone-800 bg-stone-900 p-5">
                 <p class="font-mono text-xs text-stone-500">USERS</p>
                 <p class="mt-3 font-display text-3xl font-semibold text-white">{{ $totalUsers }}</p>
@@ -21,6 +21,10 @@
             <div class="rounded-lg border border-red-900/50 bg-red-950/40 p-5">
                 <p class="font-mono text-xs text-red-300">ADMINS</p>
                 <p class="mt-3 font-display text-3xl font-semibold text-white">{{ $adminUsers }}</p>
+            </div>
+            <div class="rounded-lg border border-stone-800 bg-stone-900 p-5">
+                <p class="font-mono text-xs text-stone-500">GROUPS</p>
+                <p class="mt-3 font-display text-3xl font-semibold text-white">{{ $totalGroups }}</p>
             </div>
             <div class="rounded-lg border border-stone-800 bg-stone-900 p-5">
                 <p class="font-mono text-xs text-stone-500">ITINERARIES</p>
@@ -46,7 +50,7 @@
             <a href="{{ route('admin.itineraries') }}" class="rounded-lg border border-stone-800 bg-stone-900 p-6 hover:border-red-800">
                 <p class="font-mono text-xs font-semibold text-red-300">02 / ITINERARIES</p>
                 <h2 class="mt-4 text-xl font-semibold text-white">Kiểm duyệt lịch trình</h2>
-                <p class="mt-3 text-sm leading-6 text-stone-400">Mở bản chia sẻ chỉ đọc hoặc gỡ lịch trình khỏi hệ thống.</p>
+                <p class="mt-3 text-sm leading-6 text-stone-400">Theo dõi lịch trình thuộc nhóm và gỡ lịch trình khỏi hệ thống khi cần.</p>
             </a>
 
             <a href="{{ route('admin.categories') }}" class="rounded-lg border border-stone-800 bg-stone-900 p-6 hover:border-red-800">

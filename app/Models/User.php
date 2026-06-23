@@ -24,17 +24,18 @@ class User extends Authenticatable
         return $this->hasMany(Itinerary::class);
     }
 
-    /**
-     * Locations contributed by this user.
-     */
-    public function locations()
+    public function ownedGroups()
     {
-        return $this->hasMany(Location::class);
+        return $this->hasMany(Group::class, 'owner_id');
     }
 
-    /**
-     * Check whether this user has admin role.
-     */
+    public function groups()
+    {
+        return $this->belongsToMany(Group::class)
+            ->withPivot('role')
+            ->withTimestamps();
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';

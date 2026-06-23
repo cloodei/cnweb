@@ -1,8 +1,8 @@
 # Travel Planner
 
-Travel Planner is a Laravel web application for collecting travel destinations and building trip itineraries. Signed-in users can browse a shared destination catalog, contribute locations, build personal schedules, export a trip to PDF, and publish a read-only itinerary link.
+Travel Planner is a Laravel web application for collecting travel destinations and coordinating trip itineraries in private groups. Signed-in users can browse a shared destination catalog, contribute locations, create groups, invite other users, build group itineraries, and export a trip to PDF.
 
-The longer-term product direction is collaborative trip planning: a group should be able to plan a trip together, coordinate destinations, and track the plan in one place. The current implementation is an early foundation for that product, not a complete group workspace yet.
+The current implementation now uses groups as the planning workspace. Public itinerary share links are no longer the collaboration model.
 
 ## Start Here
 
@@ -15,9 +15,10 @@ The longer-term product direction is collaborative trip planning: a group should
 
 - Laravel Breeze registration, login, password reset, and profile pages.
 - Shared travel-location catalog with search, images, and embedded Google Maps views.
-- User-owned itineraries with scheduled locations and per-stop notes.
+- Group workspaces with owner, editor, and viewer memberships.
+- Time-limited and use-limited group invitation links.
+- Group-owned itineraries with scheduled locations and per-stop notes.
 - PDF itinerary export through `barryvdh/laravel-dompdf`.
-- Public read-only itinerary share links.
 - Admin console for internal category management, user information updates, and itinerary moderation.
 
 ## Technology
@@ -53,4 +54,4 @@ Your PHP CLI must have `pdo_sqlite` enabled when using SQLite and when running t
 
 ## Important Boundary
 
-The application does **not** currently have group memberships, invitations, collaborative itinerary editing, or an activity history. A public share link is read-only and should not be treated as group collaboration. Read [docs/PRODUCT.md](docs/PRODUCT.md) before extending that area.
+Itineraries are visible through group membership, not by possessing a public itinerary URL. Admin moderation remains separate from group ownership.

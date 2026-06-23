@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="mb-8">
         <h1 class="font-display text-3xl font-semibold text-stone-950">Đăng nhập</h1>
-        <p class="mt-2 text-sm leading-6 text-stone-600">Tiếp tục quản lý kho địa điểm và lịch trình cá nhân.</p>
+        <p class="mt-2 text-sm leading-6 text-stone-600">Tiếp tục quản lý kho địa điểm, nhóm và lịch trình chung.</p>
     </div>
 
     <x-auth-session-status class="mb-4" :status="session('status')" />
