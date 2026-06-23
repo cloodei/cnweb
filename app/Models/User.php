@@ -16,11 +16,25 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    /**
+     * Itineraries owned by this user.
+     */
     public function itineraries()
     {
         return $this->hasMany(Itinerary::class);
     }
 
+    /**
+     * Locations contributed by this user.
+     */
+    public function locations()
+    {
+        return $this->hasMany(Location::class);
+    }
+
+    /**
+     * Check whether this user has admin role.
+     */
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
@@ -35,7 +49,8 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
         ];
     }
 }
+
