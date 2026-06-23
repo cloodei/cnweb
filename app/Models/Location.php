@@ -27,6 +27,8 @@ class Location extends Model
 
     public function mapSearchQuery(): string
     {
-        return trim($this->name.' '.($this->address ?? ''));
+        return collect([$this->name, $this->address])
+            ->filter(fn ($value) => filled($value))
+            ->implode(' ');
     }
 }
