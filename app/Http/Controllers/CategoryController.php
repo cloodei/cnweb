@@ -9,11 +9,9 @@ use Illuminate\View\View;
 
 class CategoryController extends Controller
 {
-    public function index(): View
+    public function index(): RedirectResponse
     {
-        $categories = Category::withCount('locations')->latest()->get();
-
-        return view('categories.index', compact('categories'));
+        return redirect()->route('locations.index');
     }
 
     public function manage(): View
@@ -37,11 +35,9 @@ class CategoryController extends Controller
         return redirect()->route('admin.categories')->with('success', 'Đã thêm danh mục thành công!');
     }
 
-    public function show(Category $category): View
+    public function show(Category $category): RedirectResponse
     {
-        $locations = $category->locations()->latest()->get();
-
-        return view('categories.show', compact('category', 'locations'));
+        return redirect()->route('locations.index');
     }
 
     public function update(Request $request, Category $category): RedirectResponse

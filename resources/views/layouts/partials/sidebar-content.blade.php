@@ -15,12 +15,6 @@
             </svg>
             Tổng quan
         </x-nav-link>
-        <x-nav-link :href="route('categories.index')" :active="request()->routeIs('categories.*')">
-            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 6h14M5 12h14M5 18h8" />
-            </svg>
-            Danh mục
-        </x-nav-link>
         <x-nav-link :href="route('locations.index')" :active="request()->routeIs('locations.*')">
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21s6-5.2 6-10A6 6 0 1 0 6 11c0 4.8 6 10 6 10Z" />
@@ -58,7 +52,8 @@
 
         <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button type="submit" class="flex w-full items-center justify-center rounded-lg border border-stone-300 bg-white px-4 py-2.5 text-sm font-semibold text-stone-700 shadow-sm hover:bg-stone-100">
+            <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-lg border border-stone-300 bg-white px-4 py-2.5 text-sm font-semibold text-stone-700 shadow-sm hover:bg-stone-100">
+                <x-icon name="arrow-left" class="h-4 w-4" />
                 Đăng xuất
             </button>
         </form>

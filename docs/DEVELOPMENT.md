@@ -96,9 +96,9 @@ The suite also includes seven categories, fourteen Vietnamese destinations, five
 ## Manual Smoke Test
 
 1. Open `/` and register or log in.
-2. Open `/dashboard` and confirm global category and location totals plus your itinerary total.
-3. Open `/categories` and browse a category.
-4. Open `/locations`, create a destination with an image, search for it, filter by category, and open its map detail page.
+2. Open `/dashboard` and confirm global location totals plus your itinerary total.
+3. Open `/locations`, create a destination with an image, search for it, and open its map detail page.
+4. Open `/categories` and confirm it redirects back to `/locations`.
 5. Open `/itineraries`, create a trip, add destination stops with visit times and notes, and remove one stop.
 6. Download the itinerary PDF.
 7. Copy the itinerary share URL and open it in a private browser window. Confirm it is readable but has no editing controls.

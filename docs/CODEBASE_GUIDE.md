@@ -50,7 +50,6 @@ Email verification routes are provided by Breeze, but the dashboard does not req
 
 The dashboard is a signed-in landing page. It reports:
 
-- Total categories across the application.
 - Total locations across the application.
 - Total itineraries owned by the current user.
 
@@ -58,14 +57,14 @@ The database queries currently live directly in the dashboard route closure in `
 
 ### Categories
 
-Categories organize the shared destination catalog.
+Categories are internal catalog metadata for grouping shared destinations without making that grouping part of the regular user-facing browse experience.
 
 - Controller: `app/Http/Controllers/CategoryController.php`
 - Model: `app/Models/Category.php`
-- Views: `resources/views/categories/*`
+- Views: `resources/views/admin/categories.blade.php`
 - Relationship: one category has many locations.
 
-Read access is available to signed-in users. Category creation, renaming, and deletion live in the dedicated admin console. Deletion is blocked when a category still has locations, because deleting a category at the database level cascades into locations and scheduled stops.
+Regular `/categories` pages redirect signed-in users back to `/locations`. Category creation, renaming, and deletion live in the dedicated admin console. Deletion is blocked when a category still has locations, because deleting a category at the database level cascades into locations and scheduled stops.
 
 ### Locations
 
@@ -76,7 +75,7 @@ Locations are shared destination-catalog entries.
 - Views: `resources/views/locations/*`
 - Storage: uploaded images use the Laravel `public` disk under `storage/app/public/locations`.
 
-Any signed-in user can create a location. A location stores its contributor in `user_id`. The contributor or an admin can edit or delete it. All signed-in users can browse, search, filter, and read location details.
+Any signed-in user can create a location. A location stores its contributor in `user_id`. The contributor or an admin can edit or delete it. All signed-in users can browse, search, and read location details.
 
 The location-detail view embeds Google Maps using the location name and address together when available, with the name as the fallback query when there is no address.
 
@@ -171,7 +170,7 @@ Important schema behavior:
 | Landing page | `GET /` | Public |
 | Public itinerary share | `GET /shared/itineraries/{itinerary}` | Public, read-only |
 | Dashboard | `GET /dashboard` | Signed in |
-| Categories | `GET /categories`, `GET /categories/{category}` | Signed in |
+| Categories | `GET /categories`, `GET /categories/{category}` | Signed in; redirects to locations |
 | Category management | `/admin/categories/*` | Admin; create, rename, and delete unused categories |
 | Locations | `/locations/*` | Signed in; contributor or admin for edit and delete |
 | Itineraries | `/itineraries/*` | Signed in; controller restricts records to owner |
@@ -186,10 +185,10 @@ Use `php artisan route:list --except-vendor` as the source of truth when routes 
 ### Add A Destination
 
 1. A signed-in user opens `/locations/create`.
-2. `LocationController::create()` loads categories.
+2. `LocationController::create()` renders the destination form without category controls.
 3. `LocationController::store()` validates required fields and the optional image.
 4. The image is stored on the `public` disk.
-5. A location record is created with the current user's ID.
+5. A location record is created with the current user's ID and an internal default category when needed.
 6. The browser returns to `/locations`.
 
 ### Build An Itinerary
@@ -235,6 +234,6 @@ Treat these as active maintenance items when touching the related modules:
 | Add collaboration | New membership migration and model, itinerary policies, `ItineraryController`, itinerary views |
 | Add destination fields | Location migration, `Location` model, `LocationController`, location Blade views, feature tests |
 | Change authorization | Prefer policies plus feature tests; keep route middleware in `routes/web.php` clear |
-| Change categories | `CategoryController`, category views, routes, cascade behavior tests |
+| Change categories | `CategoryController`, admin category view, redirect behavior, cascade behavior tests |
 | Change itinerary exports | `ItineraryController::downloadPdf()` and `resources/views/itineraries/pdf.blade.php` |
 | Add frontend assets | `resources/js`, `resources/css`, Vite build, relevant Blade layout |

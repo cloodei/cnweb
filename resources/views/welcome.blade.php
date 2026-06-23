@@ -55,15 +55,24 @@
 
                     <dl class="mt-10 grid max-w-xl grid-cols-3 gap-3">
                         <div class="surface-panel p-4">
-                            <dt class="text-sm font-semibold text-stone-500">Kho địa điểm</dt>
+                            <dt class="flex items-center gap-2 text-sm font-semibold text-stone-500">
+                                <x-icon name="map-pin" class="h-4 w-4 text-sky-800" />
+                                Kho địa điểm
+                            </dt>
                             <dd class="mt-1 font-display text-2xl font-semibold text-stone-950">Dùng chung</dd>
                         </div>
                         <div class="surface-panel p-4">
-                            <dt class="text-sm font-semibold text-stone-500">Lịch trình</dt>
+                            <dt class="flex items-center gap-2 text-sm font-semibold text-stone-500">
+                                <x-icon name="calendar" class="h-4 w-4 text-emerald-800" />
+                                Lịch trình
+                            </dt>
                             <dd class="mt-1 font-display text-2xl font-semibold text-stone-950">Cá nhân</dd>
                         </div>
                         <div class="surface-panel p-4">
-                            <dt class="text-sm font-semibold text-stone-500">Chia sẻ</dt>
+                            <dt class="flex items-center gap-2 text-sm font-semibold text-stone-500">
+                                <x-icon name="lock" class="h-4 w-4 text-amber-800" />
+                                Chia sẻ
+                            </dt>
                             <dd class="mt-1 font-display text-2xl font-semibold text-stone-950">Chỉ đọc</dd>
                         </div>
                     </dl>

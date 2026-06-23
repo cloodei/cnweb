@@ -5,7 +5,6 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ItineraryController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ProfileController;
-use App\Models\Category;
 use App\Models\Location;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -18,11 +17,10 @@ Route::get('/shared/itineraries/{itinerary}', [ItineraryController::class, 'shar
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
-        $totalCategories = Category::count();
         $totalLocations = Location::count();
         $totalItineraries = Auth::user()->itineraries()->count();
 
-        return view('dashboard', compact('totalCategories', 'totalLocations', 'totalItineraries'));
+        return view('dashboard', compact('totalLocations', 'totalItineraries'));
     })->name('dashboard');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

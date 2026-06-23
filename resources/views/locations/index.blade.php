@@ -1,12 +1,20 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div>
-                <p class="text-sm font-semibold text-emerald-900">Kho chung</p>
-                <h1 class="section-title">Địa điểm</h1>
-                <p class="section-subtitle">Danh sách điểm đến dùng chung. Người đóng góp hoặc admin có thể chỉnh sửa.</p>
+            <div class="flex items-start gap-4">
+                <span class="icon-tile icon-tile-sky">
+                    <x-icon name="map-pin" class="h-5 w-5" />
+                </span>
+                <div>
+                    <p class="text-sm font-semibold text-emerald-900">Kho chung</p>
+                    <h1 class="section-title">Địa điểm</h1>
+                    <p class="section-subtitle">Danh sách điểm đến dùng chung. Người đóng góp hoặc admin có thể chỉnh sửa.</p>
+                </div>
             </div>
-            <a href="{{ route('locations.create') }}" class="action-primary">Thêm địa điểm</a>
+            <a href="{{ route('locations.create') }}" class="action-primary">
+                <x-icon name="plus" class="h-4 w-4" />
+                Thêm địa điểm
+            </a>
         </div>
     </x-slot>
 
@@ -16,28 +24,23 @@
         @endif
 
         <section class="surface-panel p-4 sm:p-5">
-            <form action="{{ route('locations.index') }}" method="GET" class="grid gap-3 md:grid-cols-[1fr_16rem_auto]">
-                <div>
+            <form action="{{ route('locations.index') }}" method="GET" class="grid gap-3 md:grid-cols-[1fr_auto]">
+                <div class="relative">
                     <label for="search" class="sr-only">Tìm tên hoặc địa chỉ</label>
-                    <input id="search" type="text" name="search" value="{{ request('search') }}" class="field-control mt-0" placeholder="Tìm tên hoặc địa chỉ">
-                </div>
-
-                <div>
-                    <label for="category_id" class="sr-only">Danh mục</label>
-                    <select id="category_id" name="category_id" class="field-control mt-0">
-                        <option value="">Tất cả danh mục</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                                {{ $category->name }}
-                            </option>
-                        @endforeach
-                    </select>
+                    <x-icon name="search" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
+                    <input id="search" type="text" name="search" value="{{ request('search') }}" class="field-control mt-0 pl-10" placeholder="Tìm tên hoặc địa chỉ">
                 </div>
 
                 <div class="flex gap-2">
-                    <button type="submit" class="action-primary flex-1 md:flex-none">Lọc</button>
-                    @if(request()->has('search') || request()->has('category_id'))
-                        <a href="{{ route('locations.index') }}" class="action-secondary flex-1 md:flex-none">Xóa lọc</a>
+                    <button type="submit" class="action-primary flex-1 md:flex-none">
+                        <x-icon name="search" class="h-4 w-4" />
+                        Tìm
+                    </button>
+                    @if(request()->has('search'))
+                        <a href="{{ route('locations.index') }}" class="action-secondary flex-1 md:flex-none">
+                            <x-icon name="x" class="h-4 w-4" />
+                            Xóa
+                        </a>
                     @endif
                 </div>
             </form>
@@ -79,34 +82,30 @@
                                         <div class="inline-flex items-center gap-3">
                                             <a href="{{ route('locations.edit', $location) }}" class="font-semibold text-stone-700 hover:text-emerald-900">Sửa</a>
 
-                                            <form action="{{ route('locations.destroy', $location) }}" method="POST" class="inline-block form-delete">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="button" class="font-semibold text-red-700 hover:text-red-900 btn-delete">Xóa</button>
-                                            </form>
-                                        </div>
-                                    @else
-                                        <span class="text-sm text-stone-400">Chỉ xem</span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="px-5 py-12">
-                                    <div class="empty-state">Không tìm thấy địa điểm nào.</div>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+                                        <form action="{{ route('locations.destroy', $location) }}" method="POST" class="inline-block form-delete">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" class="inline-flex items-center gap-1.5 font-semibold text-red-700 hover:text-red-900 btn-delete">
+                                                <x-icon name="trash" class="h-4 w-4" />
+                                                Xóa
+                                            </button>
+                                        </form>
+                                    </div>
+                                @else
+                                    <span class="meta-pill">Chỉ xem</span>
+                                @endif
+                            </div>
+                        </div>
+                    </article>
+                @endforeach
+            </section>
 
             @if($locations->hasPages())
-                <div class="border-t border-stone-200 bg-stone-50 px-5 py-4">
+                <div class="surface-panel px-5 py-4">
                     {{ $locations->links() }}
                 </div>
             @endif
-        </section>
+        @endif
     </div>
 
     <script>

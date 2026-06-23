@@ -14,11 +14,11 @@ The longer-term product direction is collaborative trip planning: a group should
 ## Current Features
 
 - Laravel Breeze registration, login, password reset, and profile pages.
-- Shared travel-location catalog with categories, search, filtering, images, and embedded Google Maps views.
+- Shared travel-location catalog with search, images, and embedded Google Maps views.
 - User-owned itineraries with scheduled locations and per-stop notes.
 - PDF itinerary export through `barryvdh/laravel-dompdf`.
 - Public read-only itinerary share links.
-- Admin console for category management, user information updates, and itinerary moderation.
+- Admin console for internal category management, user information updates, and itinerary moderation.
 
 ## Technology
 

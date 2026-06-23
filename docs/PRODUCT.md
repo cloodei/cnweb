@@ -19,8 +19,8 @@ Use these terms consistently in code and documentation:
 
 | Term | Meaning |
 | --- | --- |
-| Category | A way to group catalog locations, such as beaches, mountains, or museums. |
-| Location | A reusable destination-catalog entry with a name, category, description, address, and optional image. |
+| Category | Internal catalog metadata used by admins to group locations. It is not a primary user-facing browse surface. |
+| Location | A reusable destination-catalog entry with a name, description, address, and optional image. |
 | Itinerary | A trip plan with a title, dates, description, and an ordered-by-time list of scheduled locations. |
 | Scheduled stop | The relationship between an itinerary and a location. It carries the visit time and trip-specific note. |
 | Share link | A public, read-only itinerary page. It is not an invitation and does not grant edit access. |
@@ -30,7 +30,7 @@ Use these terms consistently in code and documentation:
 
 | Capability | Status | Notes |
 | --- | --- | --- |
-| Browse destinations | Implemented | Signed-in users can browse locations and categories. |
+| Browse destinations | Implemented | Signed-in users can browse and search locations. Category browsing redirects back to destinations. |
 | Contribute destinations | Implemented | Any signed-in user can add a location. The contributor or an admin can edit or delete it. |
 | Plan a trip | Implemented | An itinerary belongs to exactly one user. |
 | Schedule stops | Implemented | An itinerary owner can attach locations with visit times and notes. |
@@ -57,6 +57,7 @@ Add a separate reusable `groups` table only when the product needs a stable grou
 ## Product Rules
 
 - Locations are shared catalog content, not private itinerary data.
+- Categories are admin/internal catalog metadata and should not be surfaced as required user-facing destination context.
 - A scheduled stop is trip-specific. Its visit time and note belong on the itinerary-location relation.
 - A public share URL is read-only.
 - Edit access must come from authenticated membership or admin status, never from possession of a public share URL.

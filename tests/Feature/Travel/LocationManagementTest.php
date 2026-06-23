@@ -13,6 +13,33 @@ class LocationManagementTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_location_creation_uses_internal_default_category(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('locations.store'), [
+                'name' => 'Địa điểm mới',
+                'description' => 'Mô tả',
+                'address' => 'Đà Nẵng',
+            ]);
+
+        $response
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('locations.index', absolute: false));
+
+        $this->assertDatabaseHas('categories', [
+            'name' => 'Chưa phân loại',
+        ]);
+
+        $this->assertDatabaseHas('locations', [
+            'user_id' => $user->id,
+            'name' => 'Địa điểm mới',
+            'address' => 'Đà Nẵng',
+        ]);
+    }
+
     public function test_location_update_without_address_keeps_existing_address(): void
     {
         $user = User::factory()->create();

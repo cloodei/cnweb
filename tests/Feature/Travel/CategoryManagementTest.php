@@ -12,7 +12,7 @@ class CategoryManagementTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_regular_users_can_read_categories_without_write_controls(): void
+    public function test_regular_category_catalog_redirects_to_locations(): void
     {
         Category::create(['name' => 'Biển']);
 
@@ -21,10 +21,7 @@ class CategoryManagementTest extends TestCase
             ->get(route('categories.index'));
 
         $response
-            ->assertOk()
-            ->assertSee('Biển')
-            ->assertDontSee('Thêm danh mục')
-            ->assertDontSee('Xóa');
+            ->assertRedirect(route('locations.index', absolute: false));
     }
 
     public function test_regular_users_cannot_open_category_management(): void

@@ -20,7 +20,7 @@ Do not describe or build on group collaboration as if it already exists. Read `d
 | --- | --- | --- |
 | Authentication and profiles | `routes/auth.php`, `app/Http/Controllers/Auth`, `ProfileController`, auth/profile views | Laravel Breeze baseline |
 | Dashboard | `routes/web.php`, `resources/views/dashboard.blade.php` | Signed-in landing page |
-| Categories | `CategoryController`, `Category`, category views | Signed-in read; admin create/delete; deletion blocked while locations exist |
+| Categories | `CategoryController`, `Category`, admin category view | Internal catalog metadata; regular category pages redirect to locations; admin create/delete; deletion blocked while locations exist |
 | Locations | `LocationController`, `Location`, location views | Shared catalog; contributor or admin edit/delete |
 | Itineraries | `ItineraryController`, `Itinerary`, itinerary views | Current owner-only workspace |
 | Scheduled stops | `itinerary_location` migration, `Itinerary::locations()` | Pivot data stores visit time and note |
@@ -35,7 +35,7 @@ Do not describe or build on group collaboration as if it already exists. Read `d
 - Current itinerary mutations require the itinerary owner.
 - Public share URLs are read-only. Never grant edit access from a public share URL.
 - Location mutation is limited to the contributor or an admin.
-- Category deletion is blocked by the controller while locations exist. The schema still cascades if a category is deleted at a lower level, so treat it as a high-impact operation.
+- Category metadata is not part of the regular user-facing destination display. Category deletion is blocked by the controller while locations exist. The schema still cascades if a category is deleted at a lower level, so treat it as a high-impact operation.
 - Admin moderation is separate from future group membership.
 
 ## Before Adding Collaboration

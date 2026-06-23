@@ -15,7 +15,7 @@ class LocationController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = Location::with('category')->latest();
+        $query = Location::with('user')->latest();
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -25,28 +25,21 @@ class LocationController extends Controller
                     ->orWhere('address', 'like', '%'.$search.'%');
             });
         }
-        if ($request->filled('category_id')) {
-            $query->where('category_id', $request->category_id);
-        }
 
         $locations = $query->paginate(5)->withQueryString();
-        $categories = Category::all();
 
-        return view('locations.index', compact('locations', 'categories'));
+        return view('locations.index', compact('locations'));
     }
 
     public function create(): View
     {
-        $categories = Category::all();
-
-        return view('locations.create', compact('categories'));
+        return view('locations.create');
     }
 
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
             'description' => 'nullable|string',
             'address' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
@@ -62,6 +55,7 @@ class LocationController extends Controller
             Location::create([
                 ...$validated,
                 'user_id' => Auth::id(),
+                'category_id' => $this->defaultCategoryId(),
                 'image' => $imagePath,
             ]);
         } catch (Throwable $exception) {
@@ -78,9 +72,8 @@ class LocationController extends Controller
     public function edit(Location $location): View
     {
         $this->authorizeLocationMutation($location);
-        $categories = Category::all();
 
-        return view('locations.edit', compact('location', 'categories'));
+        return view('locations.edit', compact('location'));
     }
 
     public function update(Request $request, Location $location): RedirectResponse
@@ -89,7 +82,6 @@ class LocationController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'category_id' => 'required|exists:categories,id',
             'description' => 'nullable|string',
             'address' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
@@ -153,5 +145,10 @@ class LocationController extends Controller
         if (!Auth::user()?->isAdmin() && $location->user_id !== Auth::id()) {
             abort(403, 'Bạn không có quyền thay đổi địa điểm của người khác.');
         }
+    }
+
+    private function defaultCategoryId(): int
+    {
+        return Category::firstOrCreate(['name' => 'Chưa phân loại'])->id;
     }
 }
