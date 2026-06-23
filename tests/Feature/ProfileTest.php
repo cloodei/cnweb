@@ -10,7 +10,7 @@ class ProfileTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_profile_page_is_displayed(): void
+    public function test_profile_page_is_displayed_with_stats(): void
     {
         $user = User::factory()->create();
 
@@ -19,6 +19,8 @@ class ProfileTest extends TestCase
             ->get('/profile');
 
         $response->assertOk();
+        $response->assertViewHas('itineraryCount');
+        $response->assertViewHas('locationCount');
     }
 
     public function test_profile_information_can_be_updated(): void
@@ -28,8 +30,8 @@ class ProfileTest extends TestCase
         $response = $this
             ->actingAs($user)
             ->patch('/profile', [
-                'name' => 'Test User',
-                'email' => 'test@example.com',
+                'name'  => 'Updated Name',
+                'email' => 'updated@example.com',
             ]);
 
         $response
@@ -38,19 +40,19 @@ class ProfileTest extends TestCase
 
         $user->refresh();
 
-        $this->assertSame('Test User', $user->name);
-        $this->assertSame('test@example.com', $user->email);
+        $this->assertSame('Updated Name', $user->name);
+        $this->assertSame('updated@example.com', $user->email);
         $this->assertNull($user->email_verified_at);
     }
 
-    public function test_email_verification_status_is_unchanged_when_the_email_address_is_unchanged(): void
+    public function test_email_verification_status_is_unchanged_when_email_is_not_changed(): void
     {
         $user = User::factory()->create();
 
         $response = $this
             ->actingAs($user)
             ->patch('/profile', [
-                'name' => 'Test User',
+                'name'  => 'Same Name',
                 'email' => $user->email,
             ]);
 
@@ -59,6 +61,21 @@ class ProfileTest extends TestCase
             ->assertRedirect('/profile');
 
         $this->assertNotNull($user->refresh()->email_verified_at);
+    }
+
+    public function test_profile_update_fails_with_duplicate_email(): void
+    {
+        $existing = User::factory()->create(['email' => 'taken@example.com']);
+        $user     = User::factory()->create();
+
+        $response = $this
+            ->actingAs($user)
+            ->patch('/profile', [
+                'name'  => 'Test',
+                'email' => 'taken@example.com',
+            ]);
+
+        $response->assertSessionHasErrors('email');
     }
 
     public function test_user_can_delete_their_account(): void
@@ -95,5 +112,30 @@ class ProfileTest extends TestCase
             ->assertRedirect('/profile');
 
         $this->assertNotNull($user->fresh());
+    }
+
+    public function test_admin_is_redirected_away_from_profile_page(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this
+            ->actingAs($admin)
+            ->get('/profile');
+
+        $response->assertRedirect(route('admin.dashboard'));
+    }
+
+    public function test_admin_cannot_update_profile_via_profile_route(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this
+            ->actingAs($admin)
+            ->patch('/profile', [
+                'name'  => 'Hacked',
+                'email' => 'hacked@example.com',
+            ]);
+
+        $response->assertRedirect(route('admin.dashboard'));
     }
 }

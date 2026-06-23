@@ -10,6 +10,14 @@ use Illuminate\Validation\Rule;
 class ProfileUpdateRequest extends FormRequest
 {
     /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
@@ -26,6 +34,23 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+        ];
+    }
+
+    /**
+     * Get custom Vietnamese validation messages.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required'   => 'Vui lòng nhập họ và tên.',
+            'name.max'        => 'Họ và tên không được vượt quá 255 ký tự.',
+            'email.required'  => 'Vui lòng nhập địa chỉ email.',
+            'email.email'     => 'Địa chỉ email không hợp lệ.',
+            'email.unique'    => 'Email này đã được sử dụng bởi tài khoản khác.',
+            'email.lowercase' => 'Email phải được nhập bằng chữ thường.',
         ];
     }
 }

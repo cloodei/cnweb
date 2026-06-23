@@ -21,6 +21,8 @@ class AuthenticatedSessionController extends Controller
 
     /**
      * Handle an incoming authentication request.
+     * Admin users are redirected to the admin dashboard;
+     * regular users are redirected to their personal dashboard.
      */
     public function store(LoginRequest $request): RedirectResponse
     {
@@ -28,11 +30,17 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $destination = Auth::user()->isAdmin()
+            ? route('admin.dashboard', absolute: false)
+            : route('dashboard', absolute: false);
+
+        return redirect()->intended($destination);
     }
 
     /**
      * Destroy an authenticated session.
+     * Logs out all other devices for the current user before destroying
+     * the session so stale sessions cannot be reused.
      */
     public function destroy(Request $request): RedirectResponse
     {
