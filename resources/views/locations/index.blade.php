@@ -59,7 +59,7 @@
                             <tr class="table-row">
                                 <td class="table-cell">
                                     @if($location->image)
-                                        <img src="{{ asset('storage/' . $location->image) }}" alt="{{ $location->name }}" class="h-16 w-24 rounded-md border border-stone-200 object-cover">
+                                        <img src="{{ Storage::disk('public')->url($location->image) }}" alt="{{ $location->name }}" class="h-16 w-24 rounded-md border border-stone-200 object-cover">
                                     @else
                                         <div class="flex h-16 w-24 items-center justify-center rounded-md border border-dashed border-stone-300 bg-stone-100 text-xs font-semibold text-stone-400">Trống</div>
                                     @endif

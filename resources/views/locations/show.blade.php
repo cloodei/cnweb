@@ -26,7 +26,7 @@
     <div class="narrow-shell space-y-6">
         <article class="surface-panel overflow-hidden">
             @if($location->image)
-                <img src="{{ asset('storage/' . $location->image) }}" alt="{{ $location->name }}" class="h-80 w-full object-cover">
+                <img src="{{ Storage::disk('public')->url($location->image) }}" alt="{{ $location->name }}" class="h-80 w-full object-cover">
             @else
                 <div class="flex h-64 w-full items-center justify-center bg-stone-100 text-sm font-semibold text-stone-400">
                     Không có hình ảnh

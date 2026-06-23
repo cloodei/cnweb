@@ -50,7 +50,7 @@
                                 <article class="rounded-lg border border-stone-200 bg-stone-50 p-4">
                                     <div class="flex flex-col gap-4 sm:flex-row">
                                         @if($sl->image)
-                                            <img src="{{ asset('storage/' . $sl->image) }}" alt="{{ $sl->name }}" class="h-32 w-full rounded-md border border-stone-200 object-cover sm:w-40">
+                                            <img src="{{ Storage::disk('public')->url($sl->image) }}" alt="{{ $sl->name }}" class="h-32 w-full rounded-md border border-stone-200 object-cover sm:w-40">
                                         @endif
                                         <div class="min-w-0 flex-1">
                                             <div class="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">

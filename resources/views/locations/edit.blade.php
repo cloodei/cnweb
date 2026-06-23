@@ -37,7 +37,7 @@
                     @if($location->image)
                         <div class="mt-3">
                             <p class="mb-2 text-sm font-semibold text-stone-500">Ảnh hiện tại</p>
-                            <img src="{{ asset('storage/' . $location->image) }}" alt="{{ $location->name }}" class="h-40 w-full rounded-md border border-stone-200 object-cover sm:w-80">
+                            <img src="{{ Storage::disk('public')->url($location->image) }}" alt="{{ $location->name }}" class="h-40 w-full rounded-md border border-stone-200 object-cover sm:w-80">
                         </div>
                     @endif
 
