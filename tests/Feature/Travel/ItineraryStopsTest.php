@@ -141,4 +141,64 @@ class ItineraryStopsTest extends TestCase
             'note' => 'Không hợp lệ',
         ]);
     }
+
+    public function test_owner_can_create_itinerary(): void
+    {
+        $user = User::factory()->create();
+        $group = Group::create([
+            'owner_id' => $user->id,
+            'name' => 'Nhóm test',
+        ]);
+        $group->members()->attach($user->id, ['role' => Group::ROLE_OWNER]);
+
+        $response = $this
+            ->actingAs($user)
+            ->post(route('groups.itineraries.store', $group), [
+                'title' => 'Chuyến đi test',
+                'description' => 'Mô tả test',
+                'start_date' => '2026-06-10',
+                'end_date' => '2026-06-12',
+            ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('itineraries', [
+            'group_id' => $group->id,
+            'user_id' => $user->id,
+            'title' => 'Chuyến đi test',
+        ]);
+    }
+
+    public function test_owner_can_update_itinerary(): void
+    {
+        $user = User::factory()->create();
+        $group = Group::create([
+            'owner_id' => $user->id,
+            'name' => 'Nhóm test',
+        ]);
+        $group->members()->attach($user->id, ['role' => Group::ROLE_OWNER]);
+        $itinerary = Itinerary::create([
+            'group_id' => $group->id,
+            'user_id' => $user->id,
+            'title' => 'Cũ',
+            'description' => 'Cũ',
+            'start_date' => '2026-06-10',
+            'end_date' => '2026-06-12',
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->put(route('groups.itineraries.update', [$group, $itinerary]), [
+                'title' => 'Mới',
+                'description' => 'Mới',
+                'start_date' => '2026-06-11',
+                'end_date' => '2026-06-13',
+            ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('itineraries', [
+            'id' => $itinerary->id,
+            'title' => 'Mới',
+            'description' => 'Mới',
+        ]);
+    }
 }
