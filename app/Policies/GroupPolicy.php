@@ -36,4 +36,9 @@ class GroupPolicy
     {
         return $group->canEditItineraries($user);
     }
+
+    public function manageDestinations(User $user, Group $group): bool
+    {
+        return $group->canEditItineraries($user);
+    }
 }

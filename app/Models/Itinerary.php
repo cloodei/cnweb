@@ -36,4 +36,9 @@ class Itinerary extends Model
             ->withPivot('id', 'visit_time', 'note')
             ->withTimestamps();
     }
+
+    public function scheduledStops()
+    {
+        return $this->hasMany(ScheduledStop::class);
+    }
 }

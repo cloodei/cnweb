@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\GroupInviteController;
+use App\Http\Controllers\GroupLocationController;
 use App\Http\Controllers\ItineraryController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\ProfileController;
@@ -40,15 +41,22 @@ Route::middleware('auth')->group(function () {
     Route::get('itineraries', [ItineraryController::class, 'index'])->name('itineraries.index');
 
     Route::prefix('groups/{group}')->name('groups.')->group(function () {
+        Route::get('members', [GroupController::class, 'members'])->name('members');
         Route::post('invites', [GroupInviteController::class, 'store'])->name('invites.store');
         Route::delete('invites/{invite}', [GroupInviteController::class, 'destroy'])->name('invites.destroy');
 
+        Route::resource('destinations', GroupLocationController::class)
+            ->except(['show'])
+            ->parameters(['destinations' => 'groupLocation']);
+
+        Route::get('itineraries', [ItineraryController::class, 'groupIndex'])->name('itineraries.index');
         Route::get('itineraries/create', [ItineraryController::class, 'create'])->name('itineraries.create');
         Route::post('itineraries', [ItineraryController::class, 'store'])->name('itineraries.store');
         Route::get('itineraries/{itinerary}', [ItineraryController::class, 'show'])->name('itineraries.show');
         Route::get('itineraries/{itinerary}/edit', [ItineraryController::class, 'edit'])->name('itineraries.edit');
         Route::match(['put', 'patch'], 'itineraries/{itinerary}', [ItineraryController::class, 'update'])->name('itineraries.update');
         Route::delete('itineraries/{itinerary}', [ItineraryController::class, 'destroy'])->name('itineraries.destroy');
+        Route::get('itineraries/{itinerary}/stops/create', [ItineraryController::class, 'createStop'])->name('itineraries.stops.create');
         Route::post('itineraries/{itinerary}/add-location', [ItineraryController::class, 'addLocation'])->name('itineraries.add-location');
         Route::delete('itineraries/{itinerary}/remove-stop/{stop}', [ItineraryController::class, 'removeStop'])
             ->whereNumber('stop')

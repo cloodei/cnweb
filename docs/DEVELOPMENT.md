@@ -10,6 +10,14 @@
 
 The committed `.env.example` uses SQLite. That is the simplest local setup.
 
+Google Maps place selection is optional. To enable map-assisted private group destination creation, set:
+
+```dotenv
+GOOGLE_MAPS_BROWSER_KEY=your-browser-key
+```
+
+The key must be allowed for browser use with the Maps JavaScript API and Places library. Without it, destination forms fall back to manual entry.
+
 ## First-Time Setup With SQLite
 
 PowerShell:
@@ -91,7 +99,7 @@ npm run dev
 | User C | `chau@gmail.com` | `12345678` |
 | User D | `huy@gmail.com` | `12345678` |
 
-The suite also includes seven categories, fourteen Vietnamese destinations, three travel groups, five group itineraries, and scheduled stops with visit times and notes. It is deterministic and safe to rerun for these records. These credentials are for local development only.
+The suite also includes seven categories, fourteen Vietnamese shared destinations, three travel groups, private group destinations, five group itineraries, and scheduled stops with visit times and notes. It is deterministic and safe to rerun for these records. These credentials are for local development only.
 
 ## Manual Smoke Test
 
@@ -100,12 +108,13 @@ The suite also includes seven categories, fourteen Vietnamese destinations, thre
 3. Open `/locations`, create a destination with an image, search for it, and open its map detail page.
 4. Open `/categories` and confirm it redirects back to `/locations`.
 5. Open `/groups`, create a group, and confirm you are listed as owner.
-6. From the group page, create a trip, add destination stops with visit times and notes, and remove one stop.
-7. Create an invite link with a short duration and max-use count. Open it as another signed-in user and confirm the user can join with the selected role.
-8. Download the itinerary PDF from a group itinerary page.
-9. With the seeded admin account, open `/admin/users`, edit a user's name/email/role, and confirm no delete-user action exists.
-10. Open `/admin/categories`, create or rename a category, and confirm categories containing locations cannot be deleted.
-11. Open `/admin/itineraries` and verify the seeded group trips are available for moderation.
+6. Open the group's private destinations page, add a destination manually or with Google Maps if configured, and confirm it stays under that group.
+7. From the group itineraries page, create a trip, add stops from both private group destinations and the shared catalog, and remove one stop.
+8. Create an invite link with a short duration and max-use count. Open it as another signed-in user and confirm the user can join with the selected role.
+9. Download the itinerary PDF from a group itinerary page.
+10. With the seeded admin account, open `/admin/users`, edit a user's name/email/role, and confirm no delete-user action exists.
+11. Open `/admin/categories`, create or rename a category, and confirm categories containing locations cannot be deleted.
+12. Open `/admin/itineraries` and verify the seeded group trips are available for moderation.
 
 ## Verification Commands
 

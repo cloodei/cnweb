@@ -5,9 +5,9 @@
                 <x-icon name="calendar" class="h-5 w-5" />
             </span>
             <div>
-                <a href="{{ route('groups.show', $group) }}" class="link-quiet inline-flex items-center gap-1.5 text-sm">
+                <a href="{{ route('groups.itineraries.index', $group) }}" class="link-quiet inline-flex items-center gap-1.5 text-sm">
                     <x-icon name="arrow-left" class="h-4 w-4" />
-                    Quay lại nhóm
+                    Quay lại lịch trình
                 </a>
                 <h1 class="section-title mt-2">Tạo lịch trình</h1>
                 <p class="section-subtitle">Lịch trình sẽ nằm trong nhóm {{ $group->name }}.</p>
@@ -15,7 +15,9 @@
         </div>
     </x-slot>
 
-    <div class="narrow-shell">
+    <div class="narrow-shell space-y-6">
+        @include('groups.partials.nav', ['group' => $group])
+
         <section class="surface-panel p-6 sm:p-8">
             <form action="{{ route('groups.itineraries.store', $group) }}" method="POST" class="space-y-6">
                 @csrf
@@ -62,7 +64,7 @@
                         <x-icon name="plus" class="h-4 w-4" />
                         Tạo lịch trình
                     </button>
-                    <a href="{{ route('groups.show', $group) }}" class="action-secondary">
+                    <a href="{{ route('groups.itineraries.index', $group) }}" class="action-secondary">
                         <x-icon name="x" class="h-4 w-4" />
                         Hủy
                     </a>

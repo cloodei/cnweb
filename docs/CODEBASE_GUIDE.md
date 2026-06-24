@@ -27,7 +27,7 @@ flowchart LR
 | `bootstrap/app.php` | Laravel bootstrapping and the `admin` middleware alias. |
 | `app/Http/Controllers` | Request handling for categories, locations, groups, invites, itineraries, administration, and profiles. |
 | `app/Policies` | Group and itinerary authorization rules. |
-| `app/Models` | Eloquent models and relationships for users, groups, invites, categories, locations, and itineraries. |
+| `app/Models` | Eloquent models and relationships for users, groups, invites, categories, locations, group destinations, scheduled stops, and itineraries. |
 | `database/migrations` | Database schema history. |
 | `database/seeders/DatabaseSeeder.php` | Deterministic demo data for users, groups, memberships, categories, locations, itineraries, and scheduled stops. |
 | `resources/views` | Blade pages grouped by feature. |
@@ -91,6 +91,24 @@ Groups are private trip-planning workspaces.
 
 A signed-in user can create a group and becomes its owner. Group owners can edit group details and manage invite links. Editors can mutate itineraries. Viewers can read group itineraries.
 
+Group pages are split by task:
+
+- Overview: `/groups/{group}`
+- Private destinations: `/groups/{group}/destinations`
+- Itineraries: `/groups/{group}/itineraries`
+- Members and invites: `/groups/{group}/members`
+
+### Group Destinations
+
+Group destinations are private places saved inside one group for faster itinerary planning.
+
+- Controller: `app/Http/Controllers/GroupLocationController.php`
+- Model: `app/Models/GroupLocation.php`
+- Views: `resources/views/groups/destinations/*`
+- Table: `group_locations`
+
+Owners and editors can create, update, and delete group destinations. Viewers can see them in the group destination list and itinerary selector. When `GOOGLE_MAPS_BROWSER_KEY` is configured, the create/edit form loads Google Maps JavaScript with Places autocomplete and map-click reverse geocoding to populate name, address, coordinates, and place ID. Without a key, the form stays manual.
+
 ### Group Invites
 
 Group invites let authenticated users join a group through a time-limited and use-limited link.
@@ -114,7 +132,7 @@ Itineraries are group-owned trip plans.
 
 Nested routes under `/groups/{group}/itineraries/*` ensure every itinerary is reached through a group. `itineraries.user_id` is creator attribution; it is not the access boundary. Group owners and editors can create, update, delete, add stops, and remove stops. Viewers can read and download PDF exports.
 
-An attached location is represented by the `itinerary_location` pivot table. Its `visit_time` and `note` are itinerary-specific.
+An attached destination is represented by `app/Models/ScheduledStop` over the `itinerary_location` table. A stop can point to either a shared `locations.id` or a private `group_locations.id`. Its `visit_time` and `note` are itinerary-specific.
 
 ### Administration
 
@@ -133,6 +151,7 @@ erDiagram
     USERS ||--o{ GROUPS : owns
     USERS }o--o{ GROUPS : joins
     GROUPS ||--o{ ITINERARIES : owns
+    GROUPS ||--o{ GROUP_LOCATIONS : saves
     GROUPS ||--o{ GROUP_INVITES : issues
     GROUP_INVITES ||--o{ GROUP_INVITE_ACCEPTANCES : records
     USERS o|--o{ LOCATIONS : contributes
@@ -140,6 +159,7 @@ erDiagram
     CATEGORIES ||--o{ LOCATIONS : groups
     ITINERARIES ||--o{ ITINERARY_LOCATION : schedules
     LOCATIONS ||--o{ ITINERARY_LOCATION : appears_in
+    GROUP_LOCATIONS ||--o{ ITINERARY_LOCATION : appears_in
 
     USERS {
         bigint id PK
@@ -179,6 +199,17 @@ erDiagram
         string image
         string address
     }
+    GROUP_LOCATIONS {
+        bigint id PK
+        bigint group_id FK
+        bigint created_by FK
+        string name
+        string address
+        text description
+        string google_place_id
+        decimal latitude
+        decimal longitude
+    }
     ITINERARIES {
         bigint id PK
         bigint group_id FK
@@ -192,6 +223,7 @@ erDiagram
         bigint id PK
         bigint itinerary_id FK
         bigint location_id FK
+        bigint group_location_id FK
         datetime visit_time
         text note
     }
@@ -200,6 +232,7 @@ erDiagram
 Important schema behavior:
 
 - Deleting a group cascades to its memberships, invites, itineraries, and scheduled stops.
+- Deleting a group destination cascades to scheduled stops that use that private destination.
 - Deleting an itinerary cascades to its scheduled-stop records.
 - Deleting a category cascades to its locations.
 - Deleting a location cascades to its scheduled-stop records.
@@ -217,6 +250,7 @@ Important schema behavior:
 | Category management | `/admin/categories/*` | Admin; create, rename, and delete unused categories |
 | Locations | `/locations/*` | Signed in; contributor or admin for edit and delete |
 | Groups | `/groups/*` | Signed-in group members; owner for update/delete |
+| Group destinations | `/groups/{group}/destinations/*` | Group member view; owner/editor mutate |
 | Group invites | `/groups/{group}/invites`, `/group-invites/{token}` | Group owner creates/revokes; authenticated users accept valid invites |
 | Itineraries | `/groups/{group}/itineraries/*` | Group member view; owner/editor mutate |
 | Itinerary stops | `POST /groups/{group}/itineraries/{itinerary}/add-location`, `DELETE /groups/{group}/itineraries/{itinerary}/remove-stop/{stop}` | Group owner/editor |
@@ -248,11 +282,12 @@ Use `php artisan route:list --except-vendor` as the source of truth when routes 
 ### Build A Group Itinerary
 
 1. A group owner or editor opens `/groups/{group}`.
-2. They create an itinerary under `/groups/{group}/itineraries/create`.
+2. They optionally create private group destinations under `/groups/{group}/destinations/create`.
 3. `ItineraryController::store()` creates the itinerary through the group relation and stores the current user as creator.
 4. The group member opens `/groups/{group}/itineraries/{itinerary}`.
-5. Owners and editors attach locations with optional visit time and note.
-6. Any group member can export a PDF.
+5. Owners and editors add stops from `/groups/{group}/itineraries/{itinerary}/stops/create`.
+6. Stops can reference either a private group destination or a shared catalog location.
+7. Any group member can export a PDF.
 
 ### Moderate Content
 
@@ -275,17 +310,17 @@ Use `php artisan route:list --except-vendor` as the source of truth when routes 
 
 Treat these as active maintenance items when touching the related modules:
 
-1. **Private group destination catalogs are not implemented.** Locations are still shared catalog content across signed-in users.
+1. **Google Maps integration is browser-key dependent.** Private group destination forms work without a key, but autocomplete and map-click filling require `GOOGLE_MAPS_BROWSER_KEY`.
 2. **Invitation lifecycle is basic.** Invite links can expire, run out of uses, or be revoked, but there is no email delivery, notification, or member removal UI yet.
 3. **Authorization is policy-backed for groups and itineraries but still manual elsewhere.** Location and admin flows still enforce access mostly in controllers.
-4. **Domain tests are partial.** Group access, invites, category permissions, admin user editing, location ownership, and exact scheduled-stop deletion have coverage. PDF export and admin moderation still need tests.
+4. **Domain tests are partial.** Group access, invites, private destinations, category permissions, admin user editing, location ownership, and exact scheduled-stop deletion have coverage. PDF export and admin moderation still need tests.
 5. **Admin moderation is basic.** Admins can edit users, manage categories, and remove itineraries, but there is no audit trail, soft delete, or recovery flow.
 
 ## Where To Extend
 
 | Change | Primary files |
 | --- | --- |
-| Add private group destinations | Group/location migration, group destination relationships, group policy updates, group views, feature tests |
+| Change private group destinations | `GroupLocationController`, `GroupLocation`, `ScheduledStop`, group destination views, feature tests |
 | Change group roles | `Group`, `GroupPolicy`, `ItineraryPolicy`, group views, invite validation, feature tests |
 | Change invite behavior | `GroupInviteController`, `GroupInvite`, invite migrations/views, feature tests |
 | Add destination fields | Location migration, `Location` model, `LocationController`, location Blade views, feature tests |

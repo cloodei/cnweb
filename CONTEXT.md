@@ -26,11 +26,15 @@ _Avoid_: Personal schedule, public share
 
 **Scheduled stop**:
 The group itinerary's planned visit to a catalog location, including visit time and trip-specific notes.
-_Avoid_: Location
+_Avoid_: Location, group destination
 
 **Location**:
-A reusable destination-catalog entry that can be scheduled in group itineraries.
-_Avoid_: Stop, private destination
+A reusable shared destination-catalog entry that can be scheduled in group itineraries.
+_Avoid_: Stop, private group destination
+
+**Group destination**:
+A private destination saved inside one group for quick itinerary planning.
+_Avoid_: Shared location, scheduled stop
 
 **Admin**:
 A system moderation role separate from group membership and group ownership.

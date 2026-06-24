@@ -15,7 +15,9 @@
         </div>
     </x-slot>
 
-    <div class="narrow-shell">
+    <div class="narrow-shell space-y-6">
+        @include('groups.partials.nav', ['group' => $group])
+
         <section class="surface-panel p-6 sm:p-8">
             <form action="{{ route('groups.itineraries.update', [$group, $itinerary]) }}" method="POST" class="space-y-6">
                 @csrf

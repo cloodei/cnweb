@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Group;
+use App\Models\GroupLocation;
 use App\Models\Itinerary;
 use App\Models\Location;
 use App\Models\User;
@@ -247,6 +248,54 @@ class DatabaseSeeder extends Seeder
             return [$groupData['key'] => $group];
         });
 
+        $groupLocationRecords = [
+            [
+                'group' => 'hanoi-weekend',
+                'name' => 'Khách sạn trung tâm Hà Nội',
+                'address' => 'Hoàn Kiếm, Hà Nội',
+                'description' => 'Điểm hẹn và nghỉ qua đêm của nhóm.',
+                'creator' => 'usera@gmail.com',
+                'latitude' => 21.0285110,
+                'longitude' => 105.8048170,
+            ],
+            [
+                'group' => 'central-heritage',
+                'name' => 'Điểm hẹn bờ sông Hàn',
+                'address' => 'Bạch Đằng, Hải Châu, Đà Nẵng',
+                'description' => 'Tập trung trước khi đi Hội An.',
+                'creator' => 'userb@gmail.com',
+                'latitude' => 16.0677830,
+                'longitude' => 108.2208330,
+            ],
+            [
+                'group' => 'mountain-clouds',
+                'name' => 'Homestay Sa Pa',
+                'address' => 'Sa Pa, Lào Cai',
+                'description' => 'Nơi nghỉ và gửi đồ trước khi lên Fansipan.',
+                'creator' => 'huy@gmail.com',
+                'latitude' => 22.3363608,
+                'longitude' => 103.8437853,
+            ],
+        ];
+
+        $groupLocations = collect($groupLocationRecords)->mapWithKeys(function (array $locationData) use ($groups, $users) {
+            $groupLocation = GroupLocation::updateOrCreate(
+                [
+                    'group_id' => $groups[$locationData['group']]->id,
+                    'name' => $locationData['name'],
+                ],
+                [
+                    'created_by' => $users[$locationData['creator']]->id,
+                    'address' => $locationData['address'],
+                    'description' => $locationData['description'],
+                    'latitude' => $locationData['latitude'],
+                    'longitude' => $locationData['longitude'],
+                ],
+            );
+
+            return [$locationData['group'].':'.$locationData['name'] => $groupLocation];
+        });
+
         $itineraryRecords = [
             [
                 'group' => 'hanoi-weekend',
@@ -256,6 +305,7 @@ class DatabaseSeeder extends Seeder
                 'start_date' => '2026-07-11',
                 'end_date' => '2026-07-12',
                 'stops' => [
+                    ['group_location' => 'Khách sạn trung tâm Hà Nội', 'visit_time' => '2026-07-11 06:45:00', 'note' => 'Tập trung tại sảnh trước khi đi ăn sáng.'],
                     ['location' => 'Hồ Hoàn Kiếm', 'visit_time' => '2026-07-11 07:30:00', 'note' => 'Đi bộ một vòng hồ và ăn sáng gần phố cổ.'],
                     ['location' => 'Văn Miếu - Quốc Tử Giám', 'visit_time' => '2026-07-11 10:00:00', 'note' => 'Dành khoảng 90 phút tham quan.'],
                     ['location' => 'Tràng An', 'visit_time' => '2026-07-12 08:00:00', 'note' => 'Khởi hành sớm từ Hà Nội, đặt vé thuyền tại bến.'],
@@ -280,6 +330,7 @@ class DatabaseSeeder extends Seeder
                 'start_date' => '2026-07-20',
                 'end_date' => '2026-07-23',
                 'stops' => [
+                    ['group_location' => 'Điểm hẹn bờ sông Hàn', 'visit_time' => '2026-07-20 15:30:00', 'note' => 'Gặp nhau trước khi qua biển Mỹ Khê.'],
                     ['location' => 'Bãi biển Mỹ Khê', 'visit_time' => '2026-07-20 16:30:00', 'note' => 'Nhận phòng trước rồi đi biển.'],
                     ['location' => 'Phố cổ Hội An', 'visit_time' => '2026-07-21 15:00:00', 'note' => 'Ở lại đến tối để xem phố lên đèn.'],
                 ],
@@ -305,6 +356,7 @@ class DatabaseSeeder extends Seeder
                 'start_date' => '2026-10-16',
                 'end_date' => '2026-10-19',
                 'stops' => [
+                    ['group_location' => 'Homestay Sa Pa', 'visit_time' => '2026-10-16 20:00:00', 'note' => 'Nhận phòng và kiểm tra đồ ấm.'],
                     ['location' => 'Đỉnh Fansipan', 'visit_time' => '2026-10-17 07:00:00', 'note' => 'Kiểm tra thời tiết và mua vé cáp treo từ hôm trước.'],
                 ],
             ],
@@ -327,9 +379,17 @@ class DatabaseSeeder extends Seeder
             DB::table('itinerary_location')->where('itinerary_id', $itinerary->id)->delete();
 
             foreach ($itineraryData['stops'] as $stop) {
+                $locationId = isset($stop['location'])
+                    ? $locations[$stop['location']]->id
+                    : null;
+                $groupLocationId = isset($stop['group_location'])
+                    ? $groupLocations[$itineraryData['group'].':'.$stop['group_location']]->id
+                    : null;
+
                 DB::table('itinerary_location')->insert([
                     'itinerary_id' => $itinerary->id,
-                    'location_id' => $locations[$stop['location']]->id,
+                    'location_id' => $locationId,
+                    'group_location_id' => $groupLocationId,
                     'visit_time' => $stop['visit_time'],
                     'note' => $stop['note'],
                     'created_at' => now(),

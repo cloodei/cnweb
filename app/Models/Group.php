@@ -35,6 +35,11 @@ class Group extends Model
         return $this->hasMany(Itinerary::class);
     }
 
+    public function groupLocations()
+    {
+        return $this->hasMany(GroupLocation::class);
+    }
+
     public function invites()
     {
         return $this->hasMany(GroupInvite::class);

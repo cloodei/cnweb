@@ -60,16 +60,38 @@ class GroupController extends Controller
 
         $group->load([
             'owner',
-            'members' => fn ($query) => $query
-                ->orderByRaw("case group_user.role when 'owner' then 1 when 'editor' then 2 else 3 end")
-                ->orderBy('name'),
         ]);
 
         $itineraries = $group->itineraries()
             ->with('creator')
-            ->withCount('locations')
+            ->withCount('scheduledStops')
             ->orderBy('start_date')
+            ->limit(4)
             ->get();
+
+        $memberCount = $group->members()->count();
+        $destinationCount = $group->groupLocations()->count();
+        $itineraryCount = $group->itineraries()->count();
+        $nextItinerary = $group->itineraries()
+            ->whereDate('end_date', '>=', today())
+            ->orderBy('start_date')
+            ->first();
+
+        $membershipRole = $group->roleFor(Auth::user());
+
+        return view('groups.show', compact('group', 'itineraries', 'memberCount', 'destinationCount', 'itineraryCount', 'nextItinerary', 'membershipRole'));
+    }
+
+    public function members(Group $group): View
+    {
+        Gate::authorize('view', $group);
+
+        $group->load([
+            'owner',
+            'members' => fn ($query) => $query
+                ->orderByRaw("case group_user.role when 'owner' then 1 when 'editor' then 2 else 3 end")
+                ->orderBy('name'),
+        ]);
 
         $invites = Gate::allows('manageInvites', $group)
             ? $group->invites()->with('createdBy')->latest()->get()
@@ -77,7 +99,7 @@ class GroupController extends Controller
 
         $membershipRole = $group->roleFor(Auth::user());
 
-        return view('groups.show', compact('group', 'itineraries', 'invites', 'membershipRole'));
+        return view('groups.members', compact('group', 'invites', 'membershipRole'));
     }
 
     public function edit(Group $group): View

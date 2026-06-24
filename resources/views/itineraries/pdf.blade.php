@@ -39,19 +39,20 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($scheduledLocations as $index => $loc)
+            @foreach($scheduledStops as $index => $stop)
                 <tr>
                     <td style="text-align: center;">{{ $index + 1 }}</td>
                     <td class="time">
-                        {{ $loc->pivot->visit_time ? date('d/m/Y H:i', strtotime($loc->pivot->visit_time)) : 'Chưa xếp lịch' }}
+                        {{ $stop->visit_time ? $stop->visit_time->format('d/m/Y H:i') : 'Chưa xếp lịch' }}
                     </td>
                     <td>
-                        <strong>{{ $loc->name }}</strong><br>
-                        <span style="font-size: 12px; color: #666;">{{ $loc->address }}</span>
+                        <strong>{{ $stop->destinationName() }}</strong><br>
+                        <span style="font-size: 12px; color: #666;">{{ $stop->destinationAddress() }}</span><br>
+                        <span style="font-size: 11px; color: #78716c;">{{ $stop->sourceLabel() }}</span>
                     </td>
                     <td>
-                        @if($loc->pivot->note)
-                            <div class="note">{{ $loc->pivot->note }}</div>
+                        @if($stop->note)
+                            <div class="note">{{ $stop->note }}</div>
                         @else
                             -
                         @endif

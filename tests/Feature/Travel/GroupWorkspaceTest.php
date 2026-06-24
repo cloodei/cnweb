@@ -5,6 +5,7 @@ namespace Tests\Feature\Travel;
 use App\Models\Category;
 use App\Models\Group;
 use App\Models\GroupInvite;
+use App\Models\GroupLocation;
 use App\Models\Itinerary;
 use App\Models\Location;
 use App\Models\User;
@@ -86,7 +87,7 @@ class GroupWorkspaceTest extends TestCase
         $response = $this
             ->actingAs($viewer)
             ->post(route('groups.itineraries.add-location', [$group, $itinerary]), [
-                'location_id' => $location->id,
+                'destination_ref' => 'shared:'.$location->id,
                 'visit_time' => '2026-07-20 08:00:00',
                 'note' => 'Không được thêm',
             ]);
@@ -178,6 +179,44 @@ class GroupWorkspaceTest extends TestCase
             ->assertRedirect(route('groups.index', absolute: false));
 
         $this->assertSame(3, DB::table('group_user')->count());
+    }
+
+    public function test_editor_can_create_group_private_destination_and_schedule_it(): void
+    {
+        [, $editor, $group] = $this->groupWithMembers();
+        [$itinerary] = $this->itineraryWithLocation($group);
+
+        $response = $this
+            ->actingAs($editor)
+            ->post(route('groups.destinations.store', $group), [
+                'name' => 'Khách sạn nhóm',
+                'address' => 'Hải Châu, Đà Nẵng',
+                'description' => 'Điểm hẹn riêng của nhóm.',
+                'google_place_id' => 'place-test',
+                'latitude' => 16.067783,
+                'longitude' => 108.220833,
+            ]);
+
+        $groupLocation = GroupLocation::where('name', 'Khách sạn nhóm')->firstOrFail();
+
+        $response->assertRedirect(route('groups.destinations.index', $group, absolute: false));
+        $this->assertSame($group->id, $groupLocation->group_id);
+
+        $this
+            ->actingAs($editor)
+            ->post(route('groups.itineraries.add-location', [$group, $itinerary]), [
+                'destination_ref' => 'group:'.$groupLocation->id,
+                'visit_time' => '2026-07-20 15:00:00',
+                'note' => 'Nhận phòng.',
+            ])
+            ->assertRedirect(route('groups.itineraries.show', [$group, $itinerary], absolute: false));
+
+        $this->assertDatabaseHas('itinerary_location', [
+            'itinerary_id' => $itinerary->id,
+            'location_id' => null,
+            'group_location_id' => $groupLocation->id,
+            'note' => 'Nhận phòng.',
+        ]);
     }
 
     private function groupWithMembers(): array

@@ -21,6 +21,7 @@ Use these terms consistently in code and documentation:
 | Category | Internal catalog metadata used by admins to group locations. It is not a primary user-facing browse surface. |
 | Location | A reusable destination-catalog entry with a name, description, address, and optional image. |
 | Group | A private trip-planning workspace with members and roles. |
+| Group destination | A private destination saved inside one group for quick itinerary planning. |
 | Group member | A user who belongs to a group as owner, editor, or viewer. |
 | Group invite | A time-limited and use-limited link that lets an authenticated user join a group. |
 | Itinerary | A trip plan inside one group, with a title, dates, description, and an ordered-by-time list of scheduled locations. |
@@ -35,6 +36,7 @@ Use these terms consistently in code and documentation:
 | Contribute destinations | Implemented | Any signed-in user can add a location. The contributor or an admin can edit or delete it. |
 | Create groups | Implemented | A signed-in user can create a group and becomes its owner. |
 | Invite group members | Implemented | Owners can create editor or viewer invite links with selectable duration and max uses. |
+| Save group destinations | Implemented | Owners and editors can save private group destinations with optional Google Maps place data. |
 | Plan a trip | Implemented | An itinerary belongs to exactly one group. |
 | Schedule stops | Implemented | Group owners and editors can attach locations with visit times and notes. |
 | Export a trip | Implemented | Group members can download a PDF for itineraries they can view. |
@@ -57,6 +59,7 @@ Groups are persistent planning workspaces. A group can own multiple itineraries,
 ## Product Rules
 
 - Locations are shared catalog content, not private itinerary data.
+- Group destinations are private to one group and should not appear in the shared destination catalog.
 - Categories are admin/internal catalog metadata and should not be surfaced as required user-facing destination context.
 - A scheduled stop is trip-specific. Its visit time and note belong on the itinerary-location relation.
 - Itineraries belong to groups, not directly to one user's private workspace.
@@ -71,6 +74,5 @@ These may be useful later, but they are not represented in the current implement
 
 - Collaborative comments, voting, checklists, or expense splitting.
 - Notifications and real-time updates.
-- Private group-specific destination catalogs.
 - Geospatial search or route optimization.
 - API clients or a mobile application.

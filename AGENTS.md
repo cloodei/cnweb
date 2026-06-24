@@ -23,18 +23,20 @@ Read `docs/PRODUCT.md` before changing collaboration, invite, or itinerary acces
 | Categories | `CategoryController`, `Category`, admin category view | Internal catalog metadata; regular category pages redirect to locations; admin create/delete; deletion blocked while locations exist |
 | Locations | `LocationController`, `Location`, location views | Shared catalog; contributor or admin edit/delete |
 | Groups | `GroupController`, `Group`, group views | Private workspace; owner manages group settings and invite links |
+| Group destinations | `GroupLocationController`, `GroupLocation`, group destination views | Private to one group; owner/editor create/edit/delete |
 | Group invites | `GroupInviteController`, `GroupInvite`, `GroupInviteAcceptance`, group invite views | Authenticated join links with expiry and max-use limits |
 | Itineraries | `ItineraryController`, `Itinerary`, itinerary views | Belongs to one group; owner/editor mutate, viewer reads |
-| Scheduled stops | `itinerary_location` migration, `Itinerary::locations()` | Pivot data stores visit time and note |
+| Scheduled stops | `itinerary_location` migration, `ScheduledStop`, `Itinerary::scheduledStops()` | Stop data stores source destination, visit time, and note |
 | Admin moderation | `AdminController`, `AdminMiddleware`, admin views | `User::isAdmin()` / `role === 'admin'` |
 
 ## Product Invariants
 
 - A `Location` is shared catalog content.
+- A `GroupLocation` / group destination is private catalog content for one group.
 - A `Group` is the private planning workspace.
 - A `GroupInvite` grants authenticated group membership while valid. It is not a public itinerary page.
 - An `Itinerary` is a trip plan inside one group.
-- `itinerary_location` is the scheduled-stop relation; keep trip-specific time and note data there.
+- `itinerary_location` is the scheduled-stop relation; keep trip-specific time and note data there. It can point to either a shared `Location` or a private `GroupLocation`.
 - Itinerary visibility and mutation are controlled by group membership.
 - Group owners manage invite links. Editors can mutate itineraries. Viewers can read.
 - Location mutation is limited to the contributor or an admin.
@@ -74,6 +76,7 @@ Check these before modifying adjacent code:
 - Preserve UTF-8 encoding in Blade and PHP files. Most UI strings are Vietnamese. In Windows PowerShell, use `Get-Content -Encoding utf8` when inspecting them.
 - Do not expose or commit `.env`, database files, generated assets, uploaded files, or local credentials.
 - Keep `README.md` and files under `docs/` aligned when behavior or setup changes.
+- Keep map-assisted place selection progressive: forms must still work without a Google Maps browser key.
 - Inspect cascade behavior before changing delete flows.
 - Treat invite-link changes as security-sensitive.
 - Do not introduce an API layer unless the product needs a separate client.
