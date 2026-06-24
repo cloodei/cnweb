@@ -19,7 +19,7 @@ The current implementation now uses groups as the planning workspace. Public iti
 - Private group destinations for frequently used places and meeting points.
 - Optional Google Maps place picker for auto-filling shared and private group destinations.
 - Time-limited and use-limited group invitation links.
-- Group-owned itineraries with scheduled locations and per-stop notes.
+- Group-owned itineraries with scheduled locations from both the shared catalog and private group destinations, plus per-stop notes.
 - PDF itinerary export through `barryvdh/laravel-dompdf`.
 - Admin console for internal category management, user information updates, and itinerary moderation.
 
