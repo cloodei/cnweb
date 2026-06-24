@@ -21,7 +21,7 @@ Read `docs/PRODUCT.md` before changing collaboration, invite, or itinerary acces
 | Authentication and profiles | `routes/auth.php`, `app/Http/Controllers/Auth`, `ProfileController`, auth/profile views | Laravel Breeze baseline |
 | Dashboard | `routes/web.php`, `resources/views/dashboard.blade.php` | Signed-in landing page |
 | Categories | `CategoryController`, `Category`, admin category view | Internal catalog metadata; regular category pages redirect to locations; admin create/delete; deletion blocked while locations exist |
-| Locations | `LocationController`, `Location`, location views | Shared catalog; contributor or admin edit/delete |
+| Locations | `LocationController`, `Location`, location views | Shared catalog; contributor or admin edit/delete; optional map-assisted create/edit |
 | Groups | `GroupController`, `Group`, group views | Private workspace; owner manages group settings and invite links |
 | Group destinations | `GroupLocationController`, `GroupLocation`, group destination views | Private to one group; owner/editor create/edit/delete |
 | Group invites | `GroupInviteController`, `GroupInvite`, `GroupInviteAcceptance`, group invite views | Authenticated join links with expiry and max-use limits |

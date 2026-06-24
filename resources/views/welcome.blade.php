@@ -9,7 +9,7 @@
 </head>
 <body class="font-sans">
     <div class="min-h-screen">
-        <header class="mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6 lg:px-8">
+        <header class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
             <a href="{{ url('/') }}" class="flex items-center gap-3 text-stone-950">
                 <span class="grid h-10 w-10 place-items-center rounded-lg border border-stone-300 bg-white shadow-sm">
                     <x-application-logo class="h-6 w-6 text-emerald-900" />
@@ -31,7 +31,7 @@
             @endif
         </header>
 
-        <main class="page-shell pt-6">
+        <main class="page-shell pt-4">
             <section class="grid min-h-[calc(100vh-8rem)] items-center gap-10 lg:grid-cols-[1fr_0.86fr]">
                 <div class="max-w-2xl">
                     <p class="mb-5 inline-flex rounded-full border border-stone-300 bg-white px-3 py-1 text-sm font-semibold text-stone-700 shadow-sm">

@@ -25,11 +25,11 @@ A trip plan inside one group, with dates, description, and scheduled stops.
 _Avoid_: Personal schedule, public share
 
 **Scheduled stop**:
-The group itinerary's planned visit to a catalog location, including visit time and trip-specific notes.
+The group itinerary's planned visit to a shared location or private group destination, including visit time and trip-specific notes.
 _Avoid_: Location, group destination
 
 **Location**:
-A reusable shared destination-catalog entry that can be scheduled in group itineraries.
+A reusable shared destination-catalog entry that can be scheduled in group itineraries and may store Google Maps place data.
 _Avoid_: Stop, private group destination
 
 **Group destination**:

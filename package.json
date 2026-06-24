@@ -4,10 +4,12 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite",
+        "vite": "vite",
         "setup": "composer run setup",
         "down": "php artisan down",
-        "up": "php artisan up"
+        "up": "php artisan up",
+        "start": "php artisan serve --host=0.0.0.0 --port=8000",
+        "dev": "php artisan serve"
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",

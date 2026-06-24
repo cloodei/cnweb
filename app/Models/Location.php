@@ -13,6 +13,14 @@ class Location extends Model
         'description',
         'image',
         'address',
+        'google_place_id',
+        'latitude',
+        'longitude',
+    ];
+
+    protected $casts = [
+        'latitude' => 'decimal:7',
+        'longitude' => 'decimal:7',
     ];
 
     public function category()
@@ -27,6 +35,10 @@ class Location extends Model
 
     public function mapSearchQuery(): string
     {
+        if ($this->latitude !== null && $this->longitude !== null) {
+            return $this->latitude.','.$this->longitude;
+        }
+
         return collect([$this->name, $this->address])
             ->filter(fn ($value) => filled($value))
             ->implode(' ');

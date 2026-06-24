@@ -24,6 +24,14 @@ class User extends Authenticatable
         return $this->hasMany(Itinerary::class);
     }
 
+    /**
+     * Shared catalog locations contributed by this user.
+     */
+    public function locations()
+    {
+        return $this->hasMany(Location::class);
+    }
+
     public function ownedGroups()
     {
         return $this->hasMany(Group::class, 'owner_id');
@@ -54,4 +62,3 @@ class User extends Authenticatable
         ];
     }
 }
-

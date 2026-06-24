@@ -10,13 +10,13 @@
 
 The committed `.env.example` uses SQLite. That is the simplest local setup.
 
-Google Maps place selection is optional. To enable map-assisted private group destination creation, set:
+Google Maps place selection is optional. To enable map-assisted shared and private group destination creation, set:
 
 ```dotenv
 GOOGLE_MAPS_BROWSER_KEY=your-browser-key
 ```
 
-The key must be allowed for browser use with the Maps JavaScript API and Places library. Without it, destination forms fall back to manual entry.
+The browser key must be allowed for this app's local or production origin and restricted to the Maps JavaScript API, Places API, and Geocoding API. Without it, destination forms fall back to manual entry.
 
 ## First-Time Setup With SQLite
 
@@ -105,7 +105,7 @@ The suite also includes seven categories, fourteen Vietnamese shared destination
 
 1. Open `/` and register or log in.
 2. Open `/dashboard` and confirm global location totals plus your itinerary total.
-3. Open `/locations`, create a destination with an image, search for it, and open its map detail page.
+3. Open `/locations`, create a destination manually or with Google Maps if configured, search for it, and open its map detail page.
 4. Open `/categories` and confirm it redirects back to `/locations`.
 5. Open `/groups`, create a group, and confirm you are listed as owner.
 6. Open the group's private destinations page, add a destination manually or with Google Maps if configured, and confirm it stays under that group.

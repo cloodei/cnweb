@@ -79,6 +79,8 @@ Locations are shared destination-catalog entries.
 
 Any signed-in user can create a location. A location stores its contributor in `user_id`. The contributor or an admin can edit or delete it. All signed-in users can browse, search, and read location details.
 
+When `GOOGLE_MAPS_BROWSER_KEY` is configured, the shared location create/edit forms load Google Maps JavaScript with Places autocomplete and map-click reverse geocoding to populate name, address, coordinates, and place ID. Without a key, the forms stay manual.
+
 ### Groups
 
 Groups are private trip-planning workspaces.
@@ -107,7 +109,7 @@ Group destinations are private places saved inside one group for faster itinerar
 - Views: `resources/views/groups/destinations/*`
 - Table: `group_locations`
 
-Owners and editors can create, update, and delete group destinations. Viewers can see them in the group destination list and itinerary selector. When `GOOGLE_MAPS_BROWSER_KEY` is configured, the create/edit form loads Google Maps JavaScript with Places autocomplete and map-click reverse geocoding to populate name, address, coordinates, and place ID. Without a key, the form stays manual.
+Owners and editors can create, update, and delete group destinations. Viewers can see them in the group destination list and itinerary selector. When `GOOGLE_MAPS_BROWSER_KEY` is configured, the create/edit form uses the same shared Google Maps picker as the global destination catalog. Without a key, the form stays manual.
 
 ### Group Invites
 
@@ -198,6 +200,9 @@ erDiagram
         text description
         string image
         string address
+        string google_place_id
+        decimal latitude
+        decimal longitude
     }
     GROUP_LOCATIONS {
         bigint id PK
@@ -310,7 +315,7 @@ Use `php artisan route:list --except-vendor` as the source of truth when routes 
 
 Treat these as active maintenance items when touching the related modules:
 
-1. **Google Maps integration is browser-key dependent.** Private group destination forms work without a key, but autocomplete and map-click filling require `GOOGLE_MAPS_BROWSER_KEY`.
+1. **Google Maps integration is browser-key dependent.** Shared and private group destination forms work without a key, but autocomplete and map-click filling require `GOOGLE_MAPS_BROWSER_KEY`.
 2. **Invitation lifecycle is basic.** Invite links can expire, run out of uses, or be revoked, but there is no email delivery, notification, or member removal UI yet.
 3. **Authorization is policy-backed for groups and itineraries but still manual elsewhere.** Location and admin flows still enforce access mostly in controllers.
 4. **Domain tests are partial.** Group access, invites, private destinations, category permissions, admin user editing, location ownership, and exact scheduled-stop deletion have coverage. PDF export and admin moderation still need tests.

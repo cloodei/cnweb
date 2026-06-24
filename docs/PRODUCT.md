@@ -19,7 +19,7 @@ Use these terms consistently in code and documentation:
 | Term | Meaning |
 | --- | --- |
 | Category | Internal catalog metadata used by admins to group locations. It is not a primary user-facing browse surface. |
-| Location | A reusable destination-catalog entry with a name, description, address, and optional image. |
+| Location | A reusable destination-catalog entry with a name, description, address, optional image, and optional Google Maps place data. |
 | Group | A private trip-planning workspace with members and roles. |
 | Group destination | A private destination saved inside one group for quick itinerary planning. |
 | Group member | A user who belongs to a group as owner, editor, or viewer. |
@@ -33,10 +33,10 @@ Use these terms consistently in code and documentation:
 | Capability | Status | Notes |
 | --- | --- | --- |
 | Browse destinations | Implemented | Signed-in users can browse and search locations. Category browsing redirects back to destinations. |
-| Contribute destinations | Implemented | Any signed-in user can add a location. The contributor or an admin can edit or delete it. |
+| Contribute destinations | Implemented | Any signed-in user can add a location manually or with Google Maps place selection. The contributor or an admin can edit or delete it. |
 | Create groups | Implemented | A signed-in user can create a group and becomes its owner. |
 | Invite group members | Implemented | Owners can create editor or viewer invite links with selectable duration and max uses. |
-| Save group destinations | Implemented | Owners and editors can save private group destinations with optional Google Maps place data. |
+| Save group destinations | Implemented | Owners and editors can save private group destinations manually or with Google Maps place selection. |
 | Plan a trip | Implemented | An itinerary belongs to exactly one group. |
 | Schedule stops | Implemented | Group owners and editors can attach locations with visit times and notes. |
 | Export a trip | Implemented | Group members can download a PDF for itineraries they can view. |

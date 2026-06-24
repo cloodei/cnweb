@@ -33,7 +33,9 @@ class LocationController extends Controller
 
     public function create(): View
     {
-        return view('locations.create');
+        return view('locations.create', [
+            'googleMapsKey' => config('services.google_maps.browser_key'),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -42,6 +44,9 @@ class LocationController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'address' => 'nullable|string|max:255',
+            'google_place_id' => 'nullable|string|max:255',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
         ]);
 
@@ -73,7 +78,10 @@ class LocationController extends Controller
     {
         $this->authorizeLocationMutation($location);
 
-        return view('locations.edit', compact('location'));
+        return view('locations.edit', [
+            'location' => $location,
+            'googleMapsKey' => config('services.google_maps.browser_key'),
+        ]);
     }
 
     public function update(Request $request, Location $location): RedirectResponse
@@ -84,6 +92,9 @@ class LocationController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'address' => 'nullable|string|max:255',
+            'google_place_id' => 'nullable|string|max:255',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
             'remove_image' => 'nullable|boolean',
         ]);
@@ -91,6 +102,7 @@ class LocationController extends Controller
         $oldImagePath = $location->image;
         $newImagePath = null;
         $removeImage = $request->boolean('remove_image');
+        unset($validated['remove_image']);
 
         if ($request->hasFile('image')) {
             $newImagePath = $request->file('image')->store('locations', 'public');
@@ -142,7 +154,7 @@ class LocationController extends Controller
 
     private function authorizeLocationMutation(Location $location): void
     {
-        if (!Auth::user()?->isAdmin() && $location->user_id !== Auth::id()) {
+        if (! Auth::user()?->isAdmin() && $location->user_id !== Auth::id()) {
             abort(403, 'Bạn không có quyền thay đổi địa điểm của người khác.');
         }
     }

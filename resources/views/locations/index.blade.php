@@ -46,48 +46,70 @@
             </form>
         </section>
 
-        <section class="table-shell">
-            <div class="overflow-x-auto">
-                <table class="min-w-full">
-                    <thead class="table-head">
-                        <tr>
-                            <th class="px-5 py-3">Ảnh</th>
-                            <th class="px-5 py-3">Địa điểm</th>
-                            <th class="px-5 py-3">Danh mục</th>
-                            <th class="px-5 py-3 text-right">Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($locations as $location)
-                            <tr class="table-row">
-                                <td class="table-cell">
-                                    @if($location->image)
-                                        <img src="{{ Storage::disk('public')->url($location->image) }}" alt="{{ $location->name }}" class="h-16 w-24 rounded-md border border-stone-200 object-cover">
-                                    @else
-                                        <div class="flex h-16 w-24 items-center justify-center rounded-md border border-dashed border-stone-300 bg-stone-100 text-xs font-semibold text-stone-400">Trống</div>
-                                    @endif
-                                </td>
+        @if($locations->isEmpty())
+            <section class="empty-state">
+                <x-icon name="map-pin" class="mx-auto h-8 w-8 text-stone-400" />
+                <p class="mt-3 font-semibold text-stone-700">Chưa có địa điểm phù hợp</p>
+                <p class="mt-1">Thử từ khóa khác hoặc thêm điểm đến đầu tiên vào kho chung.</p>
+                <a href="{{ route('locations.create') }}" class="action-primary mt-5">
+                    <x-icon name="plus" class="h-4 w-4" />
+                    Thêm địa điểm
+                </a>
+            </section>
+        @else
+            <section class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                @foreach($locations as $location)
+                    <article class="location-card">
+                        <a href="{{ route('locations.show', $location) }}" class="block">
+                            @if($location->image)
+                                <img src="{{ Storage::disk('public')->url($location->image) }}" alt="{{ $location->name }}" class="h-48 w-full object-cover">
+                            @else
+                                <div class="media-placeholder h-48 w-full">
+                                    <div class="text-center">
+                                        <x-icon name="image" class="mx-auto h-8 w-8" />
+                                        <p class="mt-2">Không có hình ảnh</p>
+                                    </div>
+                                </div>
+                            @endif
+                        </a>
 
-                                <td class="table-cell min-w-64">
-                                    <a href="{{ route('locations.show', $location) }}" class="link-quiet text-base">{{ $location->name }}</a>
-                                    <p class="mt-1 max-w-md truncate text-sm text-stone-500" title="{{ $location->description }}">{{ $location->description ?? 'Không có mô tả' }}</p>
-                                </td>
+                        <div class="flex flex-1 flex-col p-5">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="meta-pill">
+                                    <x-icon name="map-pin" class="h-3.5 w-3.5" />
+                                    {{ $location->address ?? 'Chưa cập nhật địa chỉ' }}
+                                </span>
+                                <span class="meta-pill">
+                                    <x-icon name="user" class="h-3.5 w-3.5" />
+                                    {{ $location->user->name ?? 'Người dùng ẩn danh' }}
+                                </span>
+                            </div>
 
-                                <td class="table-cell">
-                                    <span class="badge-accent">{{ $location->category->name }}</span>
-                                </td>
+                            <div class="mt-4 flex-1">
+                                <a href="{{ route('locations.show', $location) }}" class="card-title hover:text-emerald-900">
+                                    {{ $location->name }}
+                                </a>
+                                <p class="mt-3 clamp-3 text-sm leading-6 text-stone-600">
+                                    {{ $location->description ?? 'Chưa có mô tả cho địa điểm này.' }}
+                                </p>
+                            </div>
 
-                                <td class="table-cell text-right">
-                                    @if(Auth::user()->role === 'admin' || Auth::id() === $location->user_id)
-                                        <div class="inline-flex items-center gap-3">
-                                            <a href="{{ route('locations.edit', $location) }}" class="font-semibold text-stone-700 hover:text-emerald-900">Sửa</a>
+                            <div class="mt-5 flex items-center justify-between gap-3 border-t border-stone-100 pt-4">
+                                <a href="{{ route('locations.show', $location) }}" class="link-quiet inline-flex items-center gap-1.5 text-sm">
+                                    Xem chi tiết
+                                    <x-icon name="arrow-right" class="h-4 w-4" />
+                                </a>
 
-                                        <form action="{{ route('locations.destroy', $location) }}" method="POST" class="inline-block form-delete">
+                                @if(Auth::user()->isAdmin() || Auth::id() === $location->user_id)
+                                    <div class="flex items-center gap-2">
+                                        <a href="{{ route('locations.edit', $location) }}" class="action-secondary px-3 py-2" aria-label="Sửa {{ $location->name }}">
+                                            <x-icon name="pencil" class="h-4 w-4" />
+                                        </a>
+                                        <form action="{{ route('locations.destroy', $location) }}" method="POST" class="form-delete">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="button" class="inline-flex items-center gap-1.5 font-semibold text-red-700 hover:text-red-900 btn-delete">
+                                            <button type="button" class="action-danger btn-delete px-3 py-2" aria-label="Xóa {{ $location->name }}">
                                                 <x-icon name="trash" class="h-4 w-4" />
-                                                Xóa
                                             </button>
                                         </form>
                                     </div>
@@ -111,9 +133,11 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const deleteButtons = document.querySelectorAll('.btn-delete');
+
             deleteButtons.forEach(button => {
                 button.addEventListener('click', function () {
                     const form = this.closest('.form-delete');
+
                     Swal.fire({
                         title: 'Bạn có chắc chắn?',
                         text: 'Hình ảnh và thông tin địa điểm này sẽ bị xóa vĩnh viễn.',
@@ -124,8 +148,10 @@
                         confirmButtonText: 'Xóa địa điểm',
                         cancelButtonText: 'Hủy'
                     }).then((result) => {
-                        if (result.isConfirmed) { form.submit(); }
-                    })
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
                 });
             });
         });

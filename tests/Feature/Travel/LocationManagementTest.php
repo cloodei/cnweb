@@ -23,6 +23,9 @@ class LocationManagementTest extends TestCase
                 'name' => 'Địa điểm mới',
                 'description' => 'Mô tả',
                 'address' => 'Đà Nẵng',
+                'google_place_id' => 'place-shared-test',
+                'latitude' => 16.067783,
+                'longitude' => 108.220833,
             ]);
 
         $response
@@ -37,6 +40,9 @@ class LocationManagementTest extends TestCase
             'user_id' => $user->id,
             'name' => 'Địa điểm mới',
             'address' => 'Đà Nẵng',
+            'google_place_id' => 'place-shared-test',
+            'latitude' => 16.067783,
+            'longitude' => 108.220833,
         ]);
     }
 
@@ -234,6 +240,31 @@ class LocationManagementTest extends TestCase
         $response->assertOk();
         $this->assertStringContainsString(
             urlencode('Địa điểm A Phường Bãi Cháy, TP. Hạ Long'),
+            $response->getContent()
+        );
+    }
+
+    public function test_location_show_map_search_prefers_coordinates(): void
+    {
+        $user = User::factory()->create();
+        $category = Category::create(['name' => 'Biển']);
+
+        $location = Location::create([
+            'category_id' => $category->id,
+            'user_id' => $user->id,
+            'name' => 'Địa điểm A',
+            'address' => 'Phường Bãi Cháy, TP. Hạ Long',
+            'latitude' => 20.9599020,
+            'longitude' => 107.0469650,
+        ]);
+
+        $response = $this
+            ->actingAs($user)
+            ->get(route('locations.show', $location));
+
+        $response->assertOk();
+        $this->assertStringContainsString(
+            urlencode('20.9599020,107.0469650'),
             $response->getContent()
         );
     }

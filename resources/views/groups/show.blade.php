@@ -18,7 +18,7 @@
                         </span>
                         <span class="badge">
                             <x-icon name="map-pin" class="h-3.5 w-3.5" />
-                            {{ $destinationCount }} địa điểm riêng
+                            {{ $destinationCount }} địa điểm nhóm
                         </span>
                         <span class="badge">
                             Vai trò: {{ ucfirst($membershipRole) }}
@@ -59,7 +59,7 @@
             <a href="{{ route('groups.destinations.index', $group) }}" class="stat-card hover:border-sky-200">
                 <div class="flex items-start justify-between gap-4">
                     <div>
-                        <p class="text-sm font-semibold text-stone-500">Địa điểm riêng</p>
+                        <p class="text-sm font-semibold text-stone-500">Địa điểm nhóm</p>
                         <p class="mt-3 font-display text-4xl font-semibold text-stone-950">{{ $destinationCount }}</p>
                     </div>
                     <span class="icon-tile icon-tile-sky">

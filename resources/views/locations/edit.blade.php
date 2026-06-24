@@ -15,12 +15,13 @@
         </div>
     </x-slot>
 
-    <div class="narrow-shell">
-        <section class="surface-panel p-6 sm:p-8">
-            <form action="{{ route('locations.update', $location) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
-                @csrf
-                @method('PUT')
+    <div class="page-shell">
+        <form action="{{ route('locations.update', $location) }}" method="POST" enctype="multipart/form-data" class="grid gap-6 xl:grid-cols-[0.58fr_0.42fr]">
+            @csrf
+            @method('PUT')
 
+            <section class="surface-panel p-6 sm:p-8">
+                <div class="space-y-6">
                 <div>
                     <label for="name" class="label-quiet flex items-center gap-2">
                         <x-icon name="map-pin" class="h-4 w-4 text-sky-800" />
@@ -88,8 +89,19 @@
                         Hủy
                     </a>
                 </div>
-            </form>
-        </section>
+                </div>
+            </section>
+
+            <aside class="surface-panel h-fit p-5 sm:p-6 xl:sticky xl:top-24">
+                @include('shared.place-picker', [
+                    'googleMapsKey' => $googleMapsKey,
+                    'place' => $location,
+                    'pickerId' => 'shared-location-picker',
+                    'title' => 'Chọn lại từ Google Maps',
+                    'description' => 'Tìm trên Maps hoặc bấm bản đồ để cập nhật tên, địa chỉ và tọa độ.',
+                ])
+            </aside>
+        </form>
     </div>
 
     <script>
