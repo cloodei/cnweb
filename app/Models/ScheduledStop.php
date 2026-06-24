@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Validation\ValidationException;
 
 class ScheduledStop extends Model
 {
@@ -19,6 +20,20 @@ class ScheduledStop extends Model
     protected $casts = [
         'visit_time' => 'datetime',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (ScheduledStop $scheduledStop): void {
+            $hasSharedLocation = $scheduledStop->location_id !== null;
+            $hasGroupLocation = $scheduledStop->group_location_id !== null;
+
+            if ($hasSharedLocation === $hasGroupLocation) {
+                throw ValidationException::withMessages([
+                    'destination_ref' => 'Mỗi điểm dừng phải gắn với đúng một địa điểm.',
+                ]);
+            }
+        });
+    }
 
     public function itinerary()
     {
