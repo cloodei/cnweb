@@ -37,8 +37,8 @@ Use these terms consistently in code and documentation:
 | Create groups | Implemented | A signed-in user can create a group and becomes its owner. |
 | Invite group members | Implemented | Owners can create editor or viewer invite links with selectable duration and max uses. |
 | Save group destinations | Implemented | Owners and editors can save private group destinations manually or with Google Maps place selection. |
-| Plan a trip | Implemented | An itinerary belongs to exactly one group. |
-| Schedule stops | Implemented | Group owners and editors can attach locations with visit times and notes. |
+| Plan a trip | Implemented | An itinerary belongs to exactly one group and is always accessed through that group. |
+| Schedule stops | Implemented | Group owners and editors can attach shared locations or private group destinations with visit times and notes. |
 | Export a trip | Implemented | Group members can download a PDF for itineraries they can view. |
 | Moderate content | Partially implemented | Admins can create, rename, and safely delete unused categories; edit user names, emails, and roles; and list/delete itineraries. Admins do not delete user accounts. There is no audit trail, soft delete, or recovery flow. |
 | Group membership | Implemented | Group membership uses owner, editor, and viewer roles. |

@@ -134,7 +134,7 @@ Itineraries are group-owned trip plans.
 
 Nested routes under `/groups/{group}/itineraries/*` ensure every itinerary is reached through a group. `itineraries.user_id` is creator attribution; it is not the access boundary. Group owners and editors can create, update, delete, add stops, and remove stops. Viewers can read and download PDF exports.
 
-An attached destination is represented by `app/Models/ScheduledStop` over the `itinerary_location` table. A stop can point to either a shared `locations.id` or a private `group_locations.id`. Its `visit_time` and `note` are itinerary-specific.
+An attached destination is represented by `app/Models/ScheduledStop` over the `itinerary_location` table. A stop can point to either a shared `locations.id` or a private `group_locations.id`, and the model now enforces that exactly one destination source is chosen. Its `visit_time` and `note` are itinerary-specific.
 
 ### Administration
 
