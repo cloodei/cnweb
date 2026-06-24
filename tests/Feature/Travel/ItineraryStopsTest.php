@@ -6,9 +6,11 @@ use App\Models\Category;
 use App\Models\Group;
 use App\Models\Itinerary;
 use App\Models\Location;
+use App\Models\ScheduledStop;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
 class ItineraryStopsTest extends TestCase
@@ -106,5 +108,37 @@ class ItineraryStopsTest extends TestCase
             ]));
 
         $response->assertForbidden();
+    }
+
+    public function test_scheduled_stop_requires_exactly_one_destination_source(): void
+    {
+        $user = User::factory()->create();
+        $group = Group::create([
+            'owner_id' => $user->id,
+            'name' => 'Nhóm Hạ Long',
+        ]);
+        $group->members()->attach($user->id, ['role' => Group::ROLE_OWNER]);
+        $category = Category::create(['name' => 'Biển']);
+        $location = Location::create([
+            'category_id' => $category->id,
+            'user_id' => $user->id,
+            'name' => 'Vịnh Hạ Long',
+        ]);
+        $itinerary = Itinerary::create([
+            'group_id' => $group->id,
+            'user_id' => $user->id,
+            'title' => 'Chuyến đi Hạ Long',
+            'start_date' => '2026-06-10',
+            'end_date' => '2026-06-12',
+        ]);
+
+        $this->expectException(ValidationException::class);
+
+        ScheduledStop::create([
+            'itinerary_id' => $itinerary->id,
+            'location_id' => $location->id,
+            'group_location_id' => $location->id,
+            'note' => 'Không hợp lệ',
+        ]);
     }
 }

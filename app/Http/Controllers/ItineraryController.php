@@ -11,7 +11,6 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -171,14 +170,7 @@ class ItineraryController extends Controller
         $this->assertItineraryInGroup($group, $itinerary);
         Gate::authorize('manageStops', $itinerary);
 
-        $deleted = DB::table('itinerary_location')
-            ->where('id', $stop)
-            ->where('itinerary_id', $itinerary->id)
-            ->delete();
-
-        if ($deleted === 0) {
-            abort(404);
-        }
+        $itinerary->scheduledStops()->findOrFail($stop)->delete();
 
         return redirect()->back()->with('success', 'Đã gỡ địa điểm khỏi lộ trình!');
     }

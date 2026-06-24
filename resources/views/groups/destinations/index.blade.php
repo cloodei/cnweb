@@ -11,7 +11,7 @@
                         Quay lại tổng quan
                     </a>
                     <h1 class="section-title mt-2">Địa điểm riêng</h1>
-                    <p class="section-subtitle">{{ $group->name }} lưu các điểm riêng để chọn nhanh khi xếp lịch trình.</p>
+                    <p class="section-subtitle">{{ $group->name }} · Lưu các điểm đến riêng, khách sạn,quán ăn cụ thể để chọn nhanh khi xếp lịch trình.</p>
                 </div>
             </div>
 
