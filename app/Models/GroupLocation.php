@@ -12,7 +12,8 @@ class GroupLocation extends Model
         'name',
         'address',
         'description',
-        'google_place_id',
+        'place_provider',
+        'place_id',
         'latitude',
         'longitude',
     ];
@@ -44,5 +45,29 @@ class GroupLocation extends Model
         }
 
         return trim($this->name.' '.($this->address ?? ''));
+    }
+
+    public function mapUrl(): string
+    {
+        if (config('services.maps.provider') === 'google') {
+            return 'https://www.google.com/maps/search/?'.http_build_query([
+                'api' => 1,
+                'query' => $this->mapSearchQuery(),
+            ]);
+        }
+
+        if ($this->latitude !== null && $this->longitude !== null) {
+            return sprintf(
+                'https://www.openstreetmap.org/?mlat=%s&mlon=%s#map=16/%s/%s',
+                $this->latitude,
+                $this->longitude,
+                $this->latitude,
+                $this->longitude,
+            );
+        }
+
+        return 'https://www.openstreetmap.org/search?'.http_build_query([
+            'query' => $this->mapSearchQuery(),
+        ]);
     }
 }

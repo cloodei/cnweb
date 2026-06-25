@@ -21,7 +21,7 @@ A time-limited and use-limited link that lets an authenticated user join a group
 _Avoid_: Share link, public itinerary link
 
 **Itinerary**:
-A trip plan inside one group, with dates, description, and scheduled stops.
+A trip plan inside one group, with dates, optional primary destination, description, and scheduled stops.
 _Avoid_: Personal schedule, public share
 
 **Scheduled stop**:
@@ -29,7 +29,7 @@ The group itinerary's planned visit to a shared location or private group destin
 _Avoid_: Location, group destination
 
 **Location**:
-A reusable shared destination-catalog entry that can be scheduled in group itineraries and may store Google Maps place data.
+A reusable shared destination-catalog entry that can be scheduled in group itineraries and may store map-provider place data.
 _Avoid_: Stop, private group destination
 
 **Group destination**:

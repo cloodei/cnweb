@@ -22,17 +22,17 @@ class DatabaseSeeder extends Seeder
         $password = Hash::make('12345678');
         $userRecords = [
             [
-                'name' => 'Quản trị viên',
-                'email' => 'admin@gmail.com',
+                'name' => 'admin',
+                'email' => 'admin',
                 'role' => 'admin',
             ],
             [
-                'name' => 'Nguyễn Văn A',
+                'name' => 'Nguyễn Văn Tài',
                 'email' => 'usera@gmail.com',
                 'role' => 'user',
             ],
             [
-                'name' => 'Trần Thị B',
+                'name' => 'Chu Quang Nguyên',
                 'email' => 'userb@gmail.com',
                 'role' => 'user',
             ],
@@ -304,6 +304,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Hai ngày khám phá khu trung tâm, di sản và ẩm thực Hà Nội.',
                 'start_date' => '2026-07-11',
                 'end_date' => '2026-07-12',
+                'destination' => ['location' => 'Hồ Hoàn Kiếm'],
                 'stops' => [
                     ['group_location' => 'Khách sạn trung tâm Hà Nội', 'visit_time' => '2026-07-11 06:45:00', 'note' => 'Tập trung tại sảnh trước khi đi ăn sáng.'],
                     ['location' => 'Hồ Hoàn Kiếm', 'visit_time' => '2026-07-11 07:30:00', 'note' => 'Đi bộ một vòng hồ và ăn sáng gần phố cổ.'],
@@ -318,6 +319,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Một chuyến nghỉ ngắn với lịch trình gọn quanh vịnh.',
                 'start_date' => '2026-08-01',
                 'end_date' => '2026-08-02',
+                'destination' => ['location' => 'Vịnh Hạ Long'],
                 'stops' => [
                     ['location' => 'Vịnh Hạ Long', 'visit_time' => '2026-08-01 13:30:00', 'note' => 'Có mặt tại bến trước giờ tàu 30 phút.'],
                 ],
@@ -329,6 +331,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Kết hợp biển, phố cổ và một buổi tối thư thả.',
                 'start_date' => '2026-07-20',
                 'end_date' => '2026-07-23',
+                'destination' => ['location' => 'Bãi biển Mỹ Khê'],
                 'stops' => [
                     ['group_location' => 'Điểm hẹn bờ sông Hàn', 'visit_time' => '2026-07-20 15:30:00', 'note' => 'Gặp nhau trước khi qua biển Mỹ Khê.'],
                     ['location' => 'Bãi biển Mỹ Khê', 'visit_time' => '2026-07-20 16:30:00', 'note' => 'Nhận phòng trước rồi đi biển.'],
@@ -342,6 +345,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Hành trình chậm qua Huế, Hội An và Phong Nha.',
                 'start_date' => '2026-09-03',
                 'end_date' => '2026-09-08',
+                'destination' => ['location' => 'Đại Nội Huế'],
                 'stops' => [
                     ['location' => 'Đại Nội Huế', 'visit_time' => '2026-09-03 08:00:00', 'note' => 'Mang nước và ưu tiên tham quan buổi sáng.'],
                     ['location' => 'Phố cổ Hội An', 'visit_time' => '2026-09-05 16:00:00', 'note' => 'Đặt trước chỗ nghỉ trong khu vực đi bộ.'],
@@ -355,6 +359,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'Lịch trình vùng cao tập trung vào cảnh quan và trải nghiệm ngoài trời.',
                 'start_date' => '2026-10-16',
                 'end_date' => '2026-10-19',
+                'destination' => ['location' => 'Đỉnh Fansipan'],
                 'stops' => [
                     ['group_location' => 'Homestay Sa Pa', 'visit_time' => '2026-10-16 20:00:00', 'note' => 'Nhận phòng và kiểm tra đồ ấm.'],
                     ['location' => 'Đỉnh Fansipan', 'visit_time' => '2026-10-17 07:00:00', 'note' => 'Kiểm tra thời tiết và mua vé cáp treo từ hôm trước.'],
@@ -363,6 +368,14 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($itineraryRecords as $itineraryData) {
+            $primaryDestination = $itineraryData['destination'] ?? $itineraryData['stops'][0] ?? [];
+            $primaryLocationId = isset($primaryDestination['location'])
+                ? $locations[$primaryDestination['location']]->id
+                : null;
+            $primaryGroupLocationId = isset($primaryDestination['group_location'])
+                ? $groupLocations[$itineraryData['group'].':'.$primaryDestination['group_location']]->id
+                : null;
+
             $itinerary = Itinerary::updateOrCreate(
                 [
                     'group_id' => $groups[$itineraryData['group']]->id,
@@ -370,6 +383,8 @@ class DatabaseSeeder extends Seeder
                 ],
                 [
                     'user_id' => $users[$itineraryData['owner']]->id,
+                    'location_id' => $primaryLocationId,
+                    'group_location_id' => $primaryGroupLocationId,
                     'description' => $itineraryData['description'],
                     'start_date' => $itineraryData['start_date'],
                     'end_date' => $itineraryData['end_date'],

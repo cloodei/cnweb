@@ -35,6 +35,11 @@ return [
         ],
     ],
 
+    'maps' => [
+        'provider' => env('MAP_PICKER_PROVIDER', 'osm'),
+        'nominatim_endpoint' => env('OSM_NOMINATIM_ENDPOINT', 'https://nominatim.openstreetmap.org'),
+    ],
+
     'google_maps' => [
         'browser_key' => env('GOOGLE_MAPS_BROWSER_KEY'),
     ],

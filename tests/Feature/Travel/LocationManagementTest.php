@@ -23,7 +23,8 @@ class LocationManagementTest extends TestCase
                 'name' => 'Địa điểm mới',
                 'description' => 'Mô tả',
                 'address' => 'Đà Nẵng',
-                'google_place_id' => 'place-shared-test',
+                'place_provider' => 'osm',
+                'place_id' => 'place-shared-test',
                 'latitude' => 16.067783,
                 'longitude' => 108.220833,
             ]);
@@ -40,7 +41,8 @@ class LocationManagementTest extends TestCase
             'user_id' => $user->id,
             'name' => 'Địa điểm mới',
             'address' => 'Đà Nẵng',
-            'google_place_id' => 'place-shared-test',
+            'place_provider' => 'osm',
+            'place_id' => 'place-shared-test',
             'latitude' => 16.067783,
             'longitude' => 108.220833,
         ]);
@@ -263,9 +265,7 @@ class LocationManagementTest extends TestCase
             ->get(route('locations.show', $location));
 
         $response->assertOk();
-        $this->assertStringContainsString(
-            urlencode('20.9599020,107.0469650'),
-            $response->getContent()
-        );
+        $response->assertSee('mlat=20.9599020', false);
+        $response->assertSee('mlon=107.0469650', false);
     }
 }

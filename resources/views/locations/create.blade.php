@@ -80,7 +80,7 @@
                     'googleMapsKey' => $googleMapsKey,
                     'place' => null,
                     'pickerId' => 'shared-location-picker',
-                    'title' => 'Chọn từ Google Maps',
+                    'title' => 'Chọn từ bản đồ',
                     'description' => 'Tìm trên Maps để tự điền tên, địa chỉ và tọa độ cho kho địa điểm chung.',
                 ])
             </aside>

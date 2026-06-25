@@ -28,7 +28,7 @@ class ItineraryController extends Controller
         Gate::authorize('view', $group);
 
         $query = $group->itineraries()
-            ->with('creator')
+            ->with(['creator', 'primaryLocation', 'primaryGroupLocation'])
             ->withCount('scheduledStops');
 
         if ($request->filled('search')) {
@@ -60,7 +60,9 @@ class ItineraryController extends Controller
     {
         Gate::authorize('createItinerary', $group);
 
-        return view('itineraries.create', compact('group'));
+        [$groupLocations, $sharedLocations] = $this->destinationChoices($group);
+
+        return view('itineraries.create', compact('group', 'groupLocations', 'sharedLocations'));
     }
 
     public function store(Request $request, Group $group): RedirectResponse
@@ -70,14 +72,18 @@ class ItineraryController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'destination_ref' => 'nullable|string',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
         ], [
             'end_date.after_or_equal' => 'Ngày kết thúc không được nhỏ hơn ngày bắt đầu.',
         ]);
+        $destination = $this->resolveOptionalDestination($group, $validated['destination_ref'] ?? null);
+        unset($validated['destination_ref']);
 
         $itinerary = $group->itineraries()->create([
             ...$validated,
+            ...$destination,
             'user_id' => Auth::id(),
         ]);
 
@@ -107,6 +113,7 @@ class ItineraryController extends Controller
             ->with(['location', 'groupLocation'])
             ->orderBy('visit_time')
             ->get();
+        $itinerary->loadMissing(['primaryLocation', 'primaryGroupLocation']);
         $membershipRole = $group->roleFor(Auth::user());
 
         return view('itineraries.show', compact('group', 'itinerary', 'scheduledStops', 'membershipRole'));
@@ -184,6 +191,7 @@ class ItineraryController extends Controller
             ->with(['location', 'groupLocation'])
             ->orderBy('visit_time')
             ->get();
+        $itinerary->loadMissing(['primaryLocation', 'primaryGroupLocation']);
 
         $pdf = Pdf::loadView('itineraries.pdf', compact('group', 'itinerary', 'scheduledStops'));
         $fileName = 'Lich-trinh-'.Str::slug($itinerary->title).'.pdf';
@@ -196,7 +204,9 @@ class ItineraryController extends Controller
         $this->assertItineraryInGroup($group, $itinerary);
         Gate::authorize('update', $itinerary);
 
-        return view('itineraries.edit', compact('group', 'itinerary'));
+        [$groupLocations, $sharedLocations] = $this->destinationChoices($group);
+
+        return view('itineraries.edit', compact('group', 'itinerary', 'groupLocations', 'sharedLocations'));
     }
 
     public function update(Request $request, Group $group, Itinerary $itinerary): RedirectResponse
@@ -207,13 +217,19 @@ class ItineraryController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'destination_ref' => 'nullable|string',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
         ], [
             'end_date.after_or_equal' => 'Ngày kết thúc không được nhỏ hơn ngày bắt đầu.',
         ]);
+        $destination = $this->resolveOptionalDestination($group, $validated['destination_ref'] ?? null);
+        unset($validated['destination_ref']);
 
-        $itinerary->update($validated);
+        $itinerary->update([
+            ...$validated,
+            ...$destination,
+        ]);
 
         return redirect()
             ->route('groups.itineraries.show', [$group, $itinerary])
@@ -223,6 +239,26 @@ class ItineraryController extends Controller
     private function assertItineraryInGroup(Group $group, Itinerary $itinerary): void
     {
         abort_unless($itinerary->group_id === $group->id, 404);
+    }
+
+    private function destinationChoices(Group $group): array
+    {
+        return [
+            $group->groupLocations()->orderBy('name')->get(),
+            Location::orderBy('name')->limit(100)->get(),
+        ];
+    }
+
+    private function resolveOptionalDestination(Group $group, ?string $destinationRef): array
+    {
+        if (! filled($destinationRef)) {
+            return [
+                'location_id' => null,
+                'group_location_id' => null,
+            ];
+        }
+
+        return $this->resolveDestination($group, $destinationRef);
     }
 
     private function resolveDestination(Group $group, string $destinationRef): array

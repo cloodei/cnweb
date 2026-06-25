@@ -82,8 +82,8 @@
                         <div class="mt-5 flex items-center justify-between border-t border-stone-200 pt-4">
                             @php($mapQuery = $location->mapSearchQuery())
                             @if($mapQuery)
-                                <a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($location->mapSearchQuery()) }}" target="_blank" class="link-quiet inline-flex items-center gap-1.5 text-sm">
-                                    Mở Maps
+                                <a href="{{ $location->mapUrl() }}" target="_blank" class="link-quiet inline-flex items-center gap-1.5 text-sm">
+                                    Mở bản đồ
                                     <x-icon name="arrow-right" class="h-4 w-4" />
                                 </a>
                             @else

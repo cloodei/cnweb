@@ -79,7 +79,7 @@ Locations are shared destination-catalog entries.
 
 Any signed-in user can create a location. A location stores its contributor in `user_id`. The contributor or an admin can edit or delete it. All signed-in users can browse, search, and read location details.
 
-When `GOOGLE_MAPS_BROWSER_KEY` is configured, the shared location create/edit forms load Google Maps JavaScript with Places autocomplete and map-click reverse geocoding to populate name, address, coordinates, and place ID. Without a key, the forms stay manual.
+Shared location create/edit forms use `resources/views/shared/place-picker.blade.php`. The default `MAP_PICKER_PROVIDER=osm` loads Leaflet with OpenStreetMap tiles and Nominatim search/reverse geocoding, so demos do not need a browser key. `MAP_PICKER_PROVIDER=google` switches to Google Maps JavaScript when `GOOGLE_MAPS_BROWSER_KEY` is configured.
 
 ### Groups
 
@@ -109,7 +109,7 @@ Group destinations are private places saved inside one group for faster itinerar
 - Views: `resources/views/groups/destinations/*`
 - Table: `group_locations`
 
-Owners and editors can create, update, and delete group destinations. Viewers can see them in the group destination list and itinerary selector. When `GOOGLE_MAPS_BROWSER_KEY` is configured, the create/edit form uses the same shared Google Maps picker as the global destination catalog. Without a key, the form stays manual.
+Owners and editors can create, update, and delete group destinations. Viewers can see them in the group destination list and itinerary selector. The create/edit form uses the same shared map picker as the global destination catalog.
 
 ### Group Invites
 
@@ -132,7 +132,7 @@ Itineraries are group-owned trip plans.
 - Views: `resources/views/itineraries/*`
 - PDF template: `resources/views/itineraries/pdf.blade.php`
 
-Nested routes under `/groups/{group}/itineraries/*` ensure every itinerary is reached through a group. `itineraries.user_id` is creator attribution; it is not the access boundary. Group owners and editors can create, update, delete, add stops, and remove stops. Viewers can read and download PDF exports.
+Nested routes under `/groups/{group}/itineraries/*` ensure every itinerary is reached through a group. `itineraries.user_id` is creator attribution; it is not the access boundary. An itinerary can optionally point to one primary shared location or private group destination. Group owners and editors can create, update, delete, add stops, and remove stops. Viewers can read and download PDF exports.
 
 An attached destination is represented by `app/Models/ScheduledStop` over the `itinerary_location` table. A stop can point to either a shared `locations.id` or a private `group_locations.id`, and the model now enforces that exactly one destination source is chosen. Its `visit_time` and `note` are itinerary-specific.
 
@@ -200,7 +200,8 @@ erDiagram
         text description
         string image
         string address
-        string google_place_id
+        string place_provider
+        string place_id
         decimal latitude
         decimal longitude
     }
@@ -211,7 +212,8 @@ erDiagram
         string name
         string address
         text description
-        string google_place_id
+        string place_provider
+        string place_id
         decimal latitude
         decimal longitude
     }
@@ -219,6 +221,8 @@ erDiagram
         bigint id PK
         bigint group_id FK
         bigint user_id FK
+        bigint location_id FK
+        bigint group_location_id FK
         string title
         text description
         date start_date
@@ -243,6 +247,7 @@ Important schema behavior:
 - Deleting a location cascades to its scheduled-stop records.
 - Deleting a location contributor sets `locations.user_id` to `null`.
 - Deleting an itinerary creator sets `itineraries.user_id` to `null`.
+- Deleting an itinerary primary destination sets the relevant itinerary destination foreign key to `null`.
 - The pivot table does not currently enforce itinerary/location uniqueness, so the same location can be attached to one itinerary more than once.
 
 ## Route And Access Map
@@ -288,7 +293,7 @@ Use `php artisan route:list --except-vendor` as the source of truth when routes 
 
 1. A group owner or editor opens `/groups/{group}`.
 2. They optionally create private group destinations under `/groups/{group}/destinations/create`.
-3. `ItineraryController::store()` creates the itinerary through the group relation and stores the current user as creator.
+3. `ItineraryController::store()` creates the itinerary through the group relation, optionally stores a primary destination, and stores the current user as creator.
 4. The group member opens `/groups/{group}/itineraries/{itinerary}`.
 5. Owners and editors add stops from `/groups/{group}/itineraries/{itinerary}/stops/create`.
 6. Stops can reference either a private group destination or a shared catalog location.
@@ -315,7 +320,7 @@ Use `php artisan route:list --except-vendor` as the source of truth when routes 
 
 Treat these as active maintenance items when touching the related modules:
 
-1. **Google Maps integration is browser-key dependent.** Shared and private group destination forms work without a key, but autocomplete and map-click filling require `GOOGLE_MAPS_BROWSER_KEY`.
+1. **Map selection is provider-dependent.** The default `osm` provider is suitable for low-volume demos without keys. Google Maps remains available only when a browser key is configured and the local origin is allowed.
 2. **Invitation lifecycle is basic.** Invite links can expire, run out of uses, or be revoked, but there is no email delivery, notification, or member removal UI yet.
 3. **Authorization is policy-backed for groups and itineraries but still manual elsewhere.** Location and admin flows still enforce access mostly in controllers.
 4. **Domain tests are partial.** Group access, invites, private destinations, category permissions, admin user editing, location ownership, and exact scheduled-stop deletion have coverage. PDF export and admin moderation still need tests.

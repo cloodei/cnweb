@@ -31,6 +31,11 @@
                     @error('title') <p class="mt-2 text-sm font-medium text-red-700">{{ $message }}</p> @enderror
                 </div>
 
+                @include('itineraries.partials.destination-select', [
+                    'groupLocations' => $groupLocations,
+                    'sharedLocations' => $sharedLocations,
+                ])
+
                 <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
                     <div>
                         <label for="start_date" class="label-quiet flex items-center gap-2">

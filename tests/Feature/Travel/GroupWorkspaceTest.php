@@ -43,12 +43,19 @@ class GroupWorkspaceTest extends TestCase
     public function test_editor_can_create_and_update_group_itinerary(): void
     {
         [$owner, $editor, $group] = $this->groupWithMembers();
+        $category = Category::create(['name' => 'Biển']);
+        $sharedDestination = Location::create([
+            'category_id' => $category->id,
+            'user_id' => $owner->id,
+            'name' => 'Bãi biển Mỹ Khê',
+        ]);
 
         $createResponse = $this
             ->actingAs($editor)
             ->post(route('groups.itineraries.store', $group), [
                 'title' => 'Đà Nẵng - Hội An',
                 'description' => 'Đi biển trước, phố cổ sau.',
+                'destination_ref' => 'shared:'.$sharedDestination->id,
                 'start_date' => '2026-07-20',
                 'end_date' => '2026-07-22',
             ]);
@@ -58,18 +65,30 @@ class GroupWorkspaceTest extends TestCase
         $createResponse->assertRedirect(route('groups.itineraries.show', [$group, $itinerary], absolute: false));
         $this->assertSame($group->id, $itinerary->group_id);
         $this->assertSame($editor->id, $itinerary->user_id);
+        $this->assertSame($sharedDestination->id, $itinerary->location_id);
+        $this->assertNull($itinerary->group_location_id);
+
+        $privateDestination = GroupLocation::create([
+            'group_id' => $group->id,
+            'created_by' => $editor->id,
+            'name' => 'Khách sạn nhóm',
+        ]);
 
         $updateResponse = $this
             ->actingAs($editor)
             ->patch(route('groups.itineraries.update', [$group, $itinerary]), [
                 'title' => 'Đà Nẵng - Hội An cập nhật',
                 'description' => 'Chỉnh lịch theo nhóm.',
+                'destination_ref' => 'group:'.$privateDestination->id,
                 'start_date' => '2026-07-20',
                 'end_date' => '2026-07-23',
             ]);
 
         $updateResponse->assertRedirect(route('groups.itineraries.show', [$group, $itinerary], absolute: false));
-        $this->assertSame('Đà Nẵng - Hội An cập nhật', $itinerary->refresh()->title);
+        $itinerary->refresh();
+        $this->assertSame('Đà Nẵng - Hội An cập nhật', $itinerary->title);
+        $this->assertNull($itinerary->location_id);
+        $this->assertSame($privateDestination->id, $itinerary->group_location_id);
         $this->assertSame($owner->id, $group->owner_id);
     }
 
@@ -192,7 +211,8 @@ class GroupWorkspaceTest extends TestCase
                 'name' => 'Khách sạn nhóm',
                 'address' => 'Hải Châu, Đà Nẵng',
                 'description' => 'Điểm hẹn riêng của nhóm.',
-                'google_place_id' => 'place-test',
+                'place_provider' => 'osm',
+                'place_id' => 'place-test',
                 'latitude' => 16.067783,
                 'longitude' => 108.220833,
             ]);

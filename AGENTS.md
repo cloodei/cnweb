@@ -35,7 +35,7 @@ Read `docs/PRODUCT.md` before changing collaboration, invite, or itinerary acces
 - A `GroupLocation` / group destination is private catalog content for one group.
 - A `Group` is the private planning workspace.
 - A `GroupInvite` grants authenticated group membership while valid. It is not a public itinerary page.
-- An `Itinerary` is a trip plan inside one group.
+- An `Itinerary` is a trip plan inside one group and can optionally reference one primary shared or group-private destination.
 - `itinerary_location` is the scheduled-stop relation; keep trip-specific time and note data there. It can point to either a shared `Location` or a private `GroupLocation`.
 - Itinerary visibility and mutation are controlled by group membership.
 - Group owners manage invite links. Editors can mutate itineraries. Viewers can read.
@@ -76,7 +76,7 @@ Check these before modifying adjacent code:
 - Preserve UTF-8 encoding in Blade and PHP files. Most UI strings are Vietnamese. In Windows PowerShell, use `Get-Content -Encoding utf8` when inspecting them.
 - Do not expose or commit `.env`, database files, generated assets, uploaded files, or local credentials.
 - Keep `README.md` and files under `docs/` aligned when behavior or setup changes.
-- Keep map-assisted place selection progressive: forms must still work without a Google Maps browser key.
+- Keep map-assisted place selection progressive: the default demo provider is OpenStreetMap/Nominatim without keys, and forms must still work manually if remote maps are unavailable.
 - Inspect cascade behavior before changing delete flows.
 - Treat invite-link changes as security-sensitive.
 - Do not introduce an API layer unless the product needs a separate client.

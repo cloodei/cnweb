@@ -10,13 +10,21 @@
 
 The committed `.env.example` uses SQLite. That is the simplest local setup.
 
-Google Maps place selection is optional. To enable map-assisted shared and private group destination creation, set:
+Map-assisted destination selection is enabled by default with OpenStreetMap and Nominatim, which do not require a browser API key for low-volume demos:
 
 ```dotenv
+MAP_PICKER_PROVIDER=osm
+OSM_NOMINATIM_ENDPOINT=https://nominatim.openstreetmap.org
+```
+
+To opt into Google Maps instead, set:
+
+```dotenv
+MAP_PICKER_PROVIDER=google
 GOOGLE_MAPS_BROWSER_KEY=your-browser-key
 ```
 
-The browser key must be allowed for this app's local or production origin and restricted to the Maps JavaScript API, Places API, and Geocoding API. Without it, destination forms fall back to manual entry.
+The Google browser key must be allowed for this app's local origin and restricted to the Maps JavaScript API, Places API, and Geocoding API. For this demo app, prefer the default `osm` provider when Google Cloud access or keys are unavailable.
 
 ## First-Time Setup With SQLite
 
@@ -105,10 +113,10 @@ The suite also includes seven categories, fourteen Vietnamese shared destination
 
 1. Open `/` and register or log in.
 2. Open `/dashboard` and confirm global location totals plus your itinerary total.
-3. Open `/locations`, create a destination manually or with Google Maps if configured, search for it, and open its map detail page.
+3. Open `/locations`, create a destination manually or with the map picker, search for it, and open its map detail page.
 4. Open `/categories` and confirm it redirects back to `/locations`.
 5. Open `/groups`, create a group, and confirm you are listed as owner.
-6. Open the group's private destinations page, add a destination manually or with Google Maps if configured, and confirm it stays under that group.
+6. Open the group's private destinations page, add a destination manually or with the map picker, and confirm it stays under that group.
 7. From the group itineraries page, create a trip, add stops from both private group destinations and the shared catalog, and remove one stop.
 8. Create an invite link with a short duration and max-use count. Open it as another signed-in user and confirm the user can join with the selected role.
 9. Download the itinerary PDF from a group itinerary page.

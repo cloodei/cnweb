@@ -18,13 +18,14 @@ return new class extends Migration
             $table->string('name');
             $table->string('address')->nullable();
             $table->text('description')->nullable();
-            $table->string('google_place_id')->nullable();
+            $table->string('place_provider')->nullable();
+            $table->string('place_id')->nullable();
             $table->decimal('latitude', 10, 7)->nullable();
             $table->decimal('longitude', 10, 7)->nullable();
             $table->timestamps();
 
             $table->index(['group_id', 'name']);
-            $table->index('google_place_id');
+            $table->index(['place_provider', 'place_id']);
         });
     }
 

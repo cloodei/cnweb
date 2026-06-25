@@ -101,7 +101,8 @@ class GroupLocationController extends Controller
             'name' => 'required|string|max:255',
             'address' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:2000',
-            'google_place_id' => 'nullable|string|max:255',
+            'place_provider' => 'nullable|string|max:50',
+            'place_id' => 'nullable|string|max:255',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
         ]);

@@ -97,7 +97,7 @@
                     'googleMapsKey' => $googleMapsKey,
                     'place' => $location,
                     'pickerId' => 'shared-location-picker',
-                    'title' => 'Chọn lại từ Google Maps',
+                    'title' => 'Chọn lại từ bản đồ',
                     'description' => 'Tìm trên Maps hoặc bấm bản đồ để cập nhật tên, địa chỉ và tọa độ.',
                 ])
             </aside>

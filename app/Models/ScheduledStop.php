@@ -83,6 +83,19 @@ class ScheduledStop extends Model
             : trim($destination->name.' '.($destination->address ?? ''));
     }
 
+    public function destinationMapUrl(): string
+    {
+        $destination = $this->destination();
+
+        if (! $destination) {
+            return '';
+        }
+
+        return method_exists($destination, 'mapUrl')
+            ? $destination->mapUrl()
+            : '';
+    }
+
     public function sourceLabel(): string
     {
         return $this->group_location_id ? 'Riêng của nhóm' : 'Kho chung';

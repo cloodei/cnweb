@@ -14,12 +14,12 @@ The current implementation now uses groups as the planning workspace. Public iti
 ## Current Features
 
 - Laravel Breeze registration, login, password reset, and profile pages.
-- Shared travel-location catalog with search, images, embedded Google Maps views, and optional map-assisted entry.
+- Shared travel-location catalog with search, images, map views, and optional map-assisted entry.
 - Group workspaces with owner, editor, and viewer memberships.
 - Private group destinations for frequently used places and meeting points.
-- Optional Google Maps place picker for auto-filling shared and private group destinations.
+- No-key OpenStreetMap place picker for demos, with optional Google Maps support when a browser key is available.
 - Time-limited and use-limited group invitation links.
-- Group-owned itineraries with scheduled locations from both the shared catalog and private group destinations, plus per-stop notes.
+- Group-owned itineraries with an optional primary destination, scheduled stops, and per-stop notes.
 - PDF itinerary export through `barryvdh/laravel-dompdf`.
 - Admin console for internal category management, user information updates, and itinerary moderation.
 

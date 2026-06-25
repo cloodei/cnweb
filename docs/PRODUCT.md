@@ -19,13 +19,13 @@ Use these terms consistently in code and documentation:
 | Term | Meaning |
 | --- | --- |
 | Category | Internal catalog metadata used by admins to group locations. It is not a primary user-facing browse surface. |
-| Location | A reusable destination-catalog entry with a name, description, address, optional image, and optional Google Maps place data. |
+| Location | A reusable destination-catalog entry with a name, description, address, optional image, and optional map-provider place data. |
 | Group | A private trip-planning workspace with members and roles. |
 | Group destination | A private destination saved inside one group for quick itinerary planning. |
 | Group member | A user who belongs to a group as owner, editor, or viewer. |
 | Group invite | A time-limited and use-limited link that lets an authenticated user join a group. |
-| Itinerary | A trip plan inside one group, with a title, dates, description, and an ordered-by-time list of scheduled locations. |
-| Scheduled stop | The relationship between an itinerary and a location. It carries the visit time and trip-specific note. |
+| Itinerary | A trip plan inside one group, with a title, dates, optional primary destination, description, and an ordered-by-time list of scheduled locations. |
+| Scheduled stop | The relationship between an itinerary and a selected destination. It carries the visit time and trip-specific note. |
 | Admin | A user with moderation access for categories, users, and itineraries. |
 
 ## Current Product Surface
@@ -33,12 +33,12 @@ Use these terms consistently in code and documentation:
 | Capability | Status | Notes |
 | --- | --- | --- |
 | Browse destinations | Implemented | Signed-in users can browse and search locations. Category browsing redirects back to destinations. |
-| Contribute destinations | Implemented | Any signed-in user can add a location manually or with Google Maps place selection. The contributor or an admin can edit or delete it. |
+| Contribute destinations | Implemented | Any signed-in user can add a location manually or with map-assisted place selection. The contributor or an admin can edit or delete it. |
 | Create groups | Implemented | A signed-in user can create a group and becomes its owner. |
 | Invite group members | Implemented | Owners can create editor or viewer invite links with selectable duration and max uses. |
-| Save group destinations | Implemented | Owners and editors can save private group destinations manually or with Google Maps place selection. |
-| Plan a trip | Implemented | An itinerary belongs to exactly one group and is always accessed through that group. |
-| Schedule stops | Implemented | Group owners and editors can attach shared locations or private group destinations with visit times and notes. |
+| Save group destinations | Implemented | Owners and editors can save private group destinations manually or with map-assisted place selection. |
+| Plan a trip | Implemented | An itinerary belongs to exactly one group and can optionally reference a primary destination. |
+| Schedule stops | Implemented | Group owners and editors can attach locations with visit times and notes. |
 | Export a trip | Implemented | Group members can download a PDF for itineraries they can view. |
 | Moderate content | Partially implemented | Admins can create, rename, and safely delete unused categories; edit user names, emails, and roles; and list/delete itineraries. Admins do not delete user accounts. There is no audit trail, soft delete, or recovery flow. |
 | Group membership | Implemented | Group membership uses owner, editor, and viewer roles. |
@@ -62,6 +62,7 @@ Groups are persistent planning workspaces. A group can own multiple itineraries,
 - Group destinations are private to one group and should not appear in the shared destination catalog.
 - Categories are admin/internal catalog metadata and should not be surfaced as required user-facing destination context.
 - A scheduled stop is trip-specific. Its visit time and note belong on the itinerary-location relation.
+- An itinerary's primary destination is optional and summarizes the trip; it does not replace scheduled stops.
 - Itineraries belong to groups, not directly to one user's private workspace.
 - View and edit access must come from authenticated group membership.
 - Group invite links join users to groups. They are not public itinerary pages.

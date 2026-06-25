@@ -90,6 +90,8 @@
             </div>
         </article>
 
+        @php($mapEmbedUrl = $location->mapEmbedUrl())
+
         <section class="surface-panel p-5 sm:p-6">
             <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div class="flex items-center gap-3">
@@ -101,18 +103,28 @@
                         <p class="mt-1 text-sm text-stone-600">{{ $location->address ?? $location->name }}</p>
                     </div>
                 </div>
+                <a href="{{ $location->mapUrl() }}" target="_blank" class="link-quiet inline-flex items-center gap-1.5 text-sm">
+                    Mở bản đồ
+                    <x-icon name="arrow-right" class="h-4 w-4" />
+                </a>
             </div>
 
-            <div class="h-80 overflow-hidden rounded-md border border-stone-200 bg-stone-100">
-                <iframe
-                    width="100%"
-                    height="100%"
-                    frameborder="0"
-                    style="border:0"
-                    src="https://maps.google.com/maps?q={{ urlencode($location->mapSearchQuery()) }}&t=&z=15&ie=UTF8&iwloc=&output=embed"
-                    allowfullscreen>
-                </iframe>
-            </div>
+            @if($mapEmbedUrl)
+                <div class="h-80 overflow-hidden rounded-md border border-stone-200 bg-stone-100">
+                    <iframe
+                        width="100%"
+                        height="100%"
+                        frameborder="0"
+                        style="border:0"
+                        src="{{ $mapEmbedUrl }}"
+                        allowfullscreen>
+                    </iframe>
+                </div>
+            @else
+                <div class="empty-state">
+                    <p>Chưa có tọa độ để nhúng bản đồ. Có thể mở bản đồ bằng liên kết bên trên hoặc cập nhật địa điểm bằng trình chọn bản đồ.</p>
+                </div>
+            @endif
         </section>
     </div>
 </x-app-layout>

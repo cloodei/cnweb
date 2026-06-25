@@ -63,7 +63,7 @@ class GroupController extends Controller
         ]);
 
         $itineraries = $group->itineraries()
-            ->with('creator')
+            ->with(['creator', 'primaryLocation', 'primaryGroupLocation'])
             ->withCount('scheduledStops')
             ->orderBy('start_date')
             ->limit(4)
@@ -73,6 +73,7 @@ class GroupController extends Controller
         $destinationCount = $group->groupLocations()->count();
         $itineraryCount = $group->itineraries()->count();
         $nextItinerary = $group->itineraries()
+            ->with(['primaryLocation', 'primaryGroupLocation'])
             ->whereDate('end_date', '>=', today())
             ->orderBy('start_date')
             ->first();

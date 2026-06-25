@@ -19,6 +19,9 @@
     <div class="header">
         <h1 class="title">{{ $itinerary->title }}</h1>
         <p class="meta">Khởi hành: {{ date('d/m/Y', strtotime($itinerary->start_date)) }} - Kết thúc: {{ date('d/m/Y', strtotime($itinerary->end_date)) }}</p>
+        @if($itinerary->destinationName())
+            <p>Điểm đến chính: {{ $itinerary->destinationName() }}{{ $itinerary->destinationAddress() ? ' - '.$itinerary->destinationAddress() : '' }}</p>
+        @endif
         <p>Nhóm: {{ $group->name }}</p>
         <p>Người xuất: {{ Auth::user()->name }}</p>
     </div>

@@ -113,6 +113,12 @@
                         <p class="mt-1 text-sm text-stone-600">
                             {{ date('d/m/Y', strtotime($nextItinerary->start_date)) }} - {{ date('d/m/Y', strtotime($nextItinerary->end_date)) }}
                         </p>
+                        @if($nextItinerary->destinationName())
+                            <p class="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-950">
+                                <x-icon name="map-pin" class="h-4 w-4" />
+                                {{ $nextItinerary->destinationName() }}
+                            </p>
+                        @endif
                         <a href="{{ route('groups.itineraries.show', [$group, $nextItinerary]) }}" class="link-quiet mt-3 inline-flex items-center gap-1.5 text-sm">
                             Mở lịch trình
                             <x-icon name="arrow-right" class="h-4 w-4" />
@@ -153,6 +159,12 @@
                                     <div>
                                         <h3 class="text-base font-semibold text-stone-950">{{ $itinerary->title }}</h3>
                                         <p class="mt-1 text-sm text-stone-600">{{ date('d/m/Y', strtotime($itinerary->start_date)) }} - {{ date('d/m/Y', strtotime($itinerary->end_date)) }}</p>
+                                        @if($itinerary->destinationName())
+                                            <p class="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-sky-900">
+                                                <x-icon name="map-pin" class="h-4 w-4" />
+                                                {{ $itinerary->destinationName() }}
+                                            </p>
+                                        @endif
                                     </div>
                                     <span class="badge">
                                         <x-icon name="map-pin" class="h-3.5 w-3.5" />

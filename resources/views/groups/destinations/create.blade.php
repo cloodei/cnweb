@@ -37,7 +37,7 @@
                             <x-icon name="map" class="h-4 w-4 text-sky-800" />
                             Địa chỉ
                         </label>
-                        <input type="text" name="address" id="address" value="{{ old('address') }}" class="field-control" placeholder="Tự điền từ Google Maps nếu có thể">
+                        <input type="text" name="address" id="address" value="{{ old('address') }}" class="field-control" placeholder="Tự điền từ bản đồ nếu có thể">
                         @error('address') <p class="mt-2 text-sm font-medium text-red-700">{{ $message }}</p> @enderror
                     </div>
 
